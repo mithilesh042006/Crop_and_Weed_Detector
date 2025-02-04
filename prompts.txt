@@ -1,0 +1,14 @@
+I am creating a django project and you are my assistant for the project... the project is called Crop_and_Weed_Detector which basically detects the uploaded crop image and tells what image it is
+from the ai model... i dont want to work on the ai part for now....it basically has a mobile app and admin website.. the mobile app has the following features 
+
+1. home screen where a image can be uploaded from camera or gallery and is sent to the ai_class...i will write ai logic separately in a ai_class file... create a method to fetch the ai_model chosen,
+and image from the frontend and send it to the ai_class.. the ai_class will return the data about the species....i want this in /api/upload route in get method where it fetches image from json and sends to ai_class...
+Also, i have a api/delete route where it deletes the image from the database using image id in delete method... and api/history route which displays image id, image id and summary from the db table....
+
+2. tips screen where tips will be will be displayed regarding common diseases their descriprition and ccure using the route api/tips route using post method
+
+3. common dieseases screen where common crop diseases native to india will be displayed using api/diseases route in post method
+
+4. news screen where title and content of the news regrading agriculture is displayed using the route api/news.... 
+
+think, analyze and create apporpriate files if missing and give code for this backend

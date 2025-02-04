@@ -1,0 +1,19 @@
+url should display the image using static server
+change default model option to mandatory else if error handling
+species name and image_url, model_choice in history to be added
+
+UPload change- tip and diseaes ref link in url paramaeter
+
+tips- cropname-crop tips
+diseases-diseasesname-cure-commonity(optional)
+news-title-subtitle-content-authorname-timestamp
+------------------------------------------------------
+user-history for admin
+
+authentication user only user history
+
+
+
+
+admin username-admin
+admin pass- Admin@ZraeGlobal

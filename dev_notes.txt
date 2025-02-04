@@ -1,0 +1,6 @@
+default isadmin is false... for admin panel register alone parse a is_admin=true response from frontend
+
+Hi just learned that this package is out of version but now worries through this command you can properly run the installation using npm:
+npm i react-awesome-loaders  --ignore-scripts
+and then
+npm rebuild --verbose sharp
