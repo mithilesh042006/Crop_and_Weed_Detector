@@ -36,12 +36,11 @@ dependencies:
   shared_preferences: ^2.0.6  # Storing user session
   google_fonts: ^6.1.0  # Modern fonts
   bottom_navy_bar: ^6.0.0  # Enhanced bottom navigation
+  flutter_spinkit: ^5.2.0
+  cupertino_icons: ^1.0.6 # iOS-style icons #1.0.8
+  rive: ^0.12.3
 
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
+ 
 
 dev_dependencies:
   flutter_test:

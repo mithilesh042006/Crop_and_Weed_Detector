@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io'; // Import for error handling
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,11 +30,29 @@ class ApiService {
     } on SocketException {
       print("No Internet connection");
       return false;
-    } on HttpException {
-      print("Couldn't find the requested resource");
+    } catch (e) {
+      print("Unexpected error: $e");
       return false;
-    } on FormatException {
-      print("Bad response format");
+    }
+  }
+
+  // ✅ User Registration with error handling
+  static Future<bool> registerUser(String username, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/auth/register"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"username": username, "password": password}),
+      );
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        print("Registration failed: ${response.statusCode}");
+        return false;
+      }
+    } on SocketException {
+      print("No Internet connection");
       return false;
     } catch (e) {
       print("Unexpected error: $e");
@@ -54,10 +72,6 @@ class ApiService {
       }
     } on SocketException {
       throw Exception("No Internet connection");
-    } on HttpException {
-      throw Exception("Couldn't find the requested resource");
-    } on FormatException {
-      throw Exception("Bad response format");
     } catch (e) {
       throw Exception("Unexpected error: $e");
     }
@@ -75,10 +89,6 @@ class ApiService {
       }
     } on SocketException {
       throw Exception("No Internet connection");
-    } on HttpException {
-      throw Exception("Couldn't find the requested resource");
-    } on FormatException {
-      throw Exception("Bad response format");
     } catch (e) {
       throw Exception("Unexpected error: $e");
     }
@@ -96,10 +106,6 @@ class ApiService {
       }
     } on SocketException {
       throw Exception("No Internet connection");
-    } on HttpException {
-      throw Exception("Couldn't find the requested resource");
-    } on FormatException {
-      throw Exception("Bad response format");
     } catch (e) {
       throw Exception("Unexpected error: $e");
     }
