@@ -1,0 +1,35 @@
+# Django and REST Framework
+django
+djangorestframework
+djangorestframework-simplejwt
+
+# CORS Handling
+django-cors-headers
+
+# Machine Learning and Computer Vision
+torch
+torchvision
+ultralytics  # YOLO (Ultralytics official package)
+supervision  # YOLOX object detection
+numpy
+opencv-python
+pyyaml
+matplotlib
+tqdm
+scipy
+pandas  # For handling dataset processing
+
+# Wikipedia API & Parsing
+wikipedia-api
+# wikipediaapi
+
+# Utilities and Logging
+rich
+Pillow
+
+# Frontend Communication
+axios
+
+# React Dependencies (Commented out, for reference)
+# react-router-dom
+# react-dom
