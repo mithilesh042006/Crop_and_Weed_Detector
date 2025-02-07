@@ -102,24 +102,18 @@ AUTH_PASSWORD_VALIDATORS = [
 # -----------------------------------------
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Example React dev server
-<<<<<<< HEAD
     "http://localhost:51033",
     "http://localhost:53918",
-=======
-    "http://127.0.0.1:5173"
->>>>>>> 2103b5ec97500d6ecc3b77d29d1b46e90ad44257
+    "http://127.0.0.1:5173",
 ]
-CORS_ALLOW_ALL_ORIGINS = True  # Allows requests from all origins
 
+CORS_ALLOW_ALL_ORIGINS = True  # Allows requests from all origins
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
-<<<<<<< HEAD
     "http://localhost:51033",
     "http://localhost:53918",
-=======
-    "http://127.0.0.1:5173"
->>>>>>> 2103b5ec97500d6ecc3b77d29d1b46e90ad44257
+    "http://127.0.0.1:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # If you ever want to send cookies automatically
