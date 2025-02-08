@@ -1,12 +1,10 @@
-// api_service.dart
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = "http://10.0.2.2:8000"; // Change if needed
+  static String baseUrl = "http://10.0.2.2:8000"; // Change if needed
 
   // ✅ User Login
   static Future<bool> loginUser(String username, String password) async {
@@ -140,6 +138,43 @@ class ApiService {
       return prefs.getString('username');
     } catch (e) {
       return null;
+    }
+  }
+
+  // ---------------------------------------------------------
+  // ✅ Upload Image (Classification or Detection)
+  // ---------------------------------------------------------
+  static Future<Map<String, dynamic>> uploadImage({
+    required File imageFile,
+    required String model,
+    required String mode,
+  }) async {
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$baseUrl/api/upload'),
+      );
+
+      // Add file
+      request.files.add(
+        await http.MultipartFile.fromPath('image', imageFile.path),
+      );
+
+      // Add fields
+      request.fields['model'] = model;
+      request.fields['mode'] = mode;
+
+      // Send request
+      var response = await request.send();
+      var responseData = await response.stream.bytesToString();
+
+      // Parse the JSON
+      var result = json.decode(responseData);
+      return result; // e.g. {"class_name": "...", "confidence": "..."} etc.
+    } on SocketException {
+      throw Exception("No Internet connection");
+    } catch (e) {
+      throw Exception("Error uploading image: $e");
     }
   }
 }

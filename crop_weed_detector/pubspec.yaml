@@ -109,3 +109,7 @@ flutter:
     - assets/
     - assets/loading_animation.json
     - assets/upload_animation.json
+    - assets/success_animation.json
+    - assets/crops/
+
+

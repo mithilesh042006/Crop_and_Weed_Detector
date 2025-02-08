@@ -16,99 +16,202 @@ ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "adminpass"
 
 # --------------------------
-# 2. Base Data (5 items each)
+# 2. Base Data (5 items each, more realistic)
 # --------------------------
 BASE_TIPS = [
-    {"crop_tips": "Water regularly and maintain good soil drainage."},
-    {"crop_tips": "Apply organic fertilizers and keep pests in check early."},
-    {"crop_tips": "Monitor sun exposure and provide shade if temperatures soar."},
-    {"crop_tips": "Rotate crops yearly to prevent soil depletion."},
-    {"crop_tips": "Test soil pH before planting and adjust with lime or sulfur."}
+    {
+        "crop_tips": (
+            "Water deeply early in the morning to encourage strong root growth. "
+            "Avoid overhead irrigation to reduce fungal risks."
+        )
+    },
+    {
+        "crop_tips": (
+            "Incorporate well-rotted manure or compost before planting. "
+            "This improves soil structure and nutrient content."
+        )
+    },
+    {
+        "crop_tips": (
+            "Monitor for pests weekly. Use sticky traps or introduce natural predators (e.g., ladybugs) "
+            "to keep aphids and other insects under control."
+        )
+    },
+    {
+        "crop_tips": (
+            "Mulch around seedlings to conserve moisture and suppress weeds. "
+            "Refresh the mulch layer as needed for maximum benefit."
+        )
+    },
+    {
+        "crop_tips": (
+            "Practice crop rotation with legumes to naturally replenish nitrogen in the soil. "
+            "Test your soil pH annually and amend accordingly."
+        )
+    }
 ]
 
 BASE_DISEASES = [
     {
-        "cure": "Prune infected leaves, apply copper-based fungicide.",
+        "cure": (
+            "Remove and burn infected plant debris. Apply copper-based fungicide at the first sign "
+            "of infection to halt further spread."
+        ),
         "commonness": "high"
     },
     {
-        "cure": "Use disease-resistant seeds and practice crop rotation.",
+        "cure": (
+            "Plant disease-resistant varieties and use certified disease-free seeds. "
+            "Rotate crops every 2–3 years to break the disease cycle."
+        ),
         "commonness": "moderate"
     },
     {
-        "cure": "Early detection is key; remove diseased plants immediately.",
+        "cure": (
+            "Use biological controls such as Bacillus subtilis. Maintain lower humidity in "
+            "greenhouses to deter fungal growth."
+        ),
         "commonness": "low"
     },
     {
-        "cure": "Employ a balanced fertilization plan and maintain optimum humidity.",
+        "cure": (
+            "Apply systemic fungicides as recommended. Prune surrounding vegetation to improve "
+            "air circulation and reduce damp conditions."
+        ),
         "commonness": "high"
     },
     {
-        "cure": "Use recommended bio-pesticides to keep the pathogen in check.",
+        "cure": (
+            "Introduce beneficial nematodes to manage soil pests and reduce infection rates. "
+            "Regularly monitor fields for early symptoms."
+        ),
         "commonness": "moderate"
     }
 ]
 
 BASE_NEWS = [
     {
-        "subtitle": "Agriculture Tech Innovations",
-        "content": "Drones and sensors help in real-time crop monitoring and yield prediction.",
-        "author_name": "AgroTech Report"
+        "subtitle": "Soil Health & Regeneration",
+        "content": (
+            "Farmers adopting regenerative practices report improved yields and healthier soils, "
+            "according to leading agronomists."
+        ),
+        "author_name": "AgriPulse"
     },
     {
-        "subtitle": "Weather Challenges",
-        "content": "Unexpected rains cause a delay in harvest; farmers adapt irrigation schedules.",
-        "author_name": "SkyWatch News"
+        "subtitle": "Pesticide Regulations",
+        "content": (
+            "A new policy restricts several chemical pesticides, encouraging farmers to switch "
+            "to organic alternatives and safer handling protocols."
+        ),
+        "author_name": "Farming Daily"
     },
     {
-        "subtitle": "Organic Movement",
-        "content": "Rising consumer demand for pesticide-free produce influences market dynamics.",
-        "author_name": "Farm2Table Weekly"
+        "subtitle": "Climate-Smart Agriculture",
+        "content": (
+            "Rising temperatures push the adoption of drought-resistant cultivars and water-saving "
+            "technologies, helping farmers cope with erratic weather patterns."
+        ),
+        "author_name": "Global Ag Forum"
     },
     {
-        "subtitle": "Policy Updates",
-        "content": "New subsidy schemes announced for small-scale farmers across multiple states.",
-        "author_name": "RuralGov"
+        "subtitle": "Precision Farming Growth",
+        "content": (
+            "GPS-guided tractors and drone surveillance see a surge in usage, cutting labor costs "
+            "and boosting harvest efficiency by up to 20%."
+        ),
+        "author_name": "TechAg Times"
     },
     {
-        "subtitle": "Sustainable Practices",
-        "content": "Soil health and regenerative agriculture approaches are gaining momentum globally.",
-        "author_name": "Green Horizon"
+        "subtitle": "Sustainable Supply Chains",
+        "content": (
+            "Retailers increasingly demand transparent sourcing, encouraging farmers to document "
+            "their practices from seed to sale."
+        ),
+        "author_name": "EcoMarket Insights"
     }
 ]
 
+# --------------------------
+# 2.1 Crop Image Filenames
+# --------------------------
+CROP_FILENAMES = [
+    "almond.jpg",
+    "banana.jpg",
+    "cardamom.jpg",
+    "cherry.jpg",
+    "chilli.jpg",
+    "clove.jpg",
+    "coconut.jpg",
+    "coffee-plant.jpg",
+    "cotton.jpg",
+    "cucumber.jpg",
+    "fox_nut(makhana).jpg",
+    "gram.jpg",
+    "jowar.jpg",
+    "jute.jpg",
+    "lemon.jpg",
+    "maize.jpg",
+    "mustard-oil.jpg",
+    "olive-tree.jpg",
+    "papaya.jpg",
+    "pearl_millet(bajra).jpg",
+    "pineapple.jpg",
+    "rice.jpg",
+    "soyabean.jpg",
+    "sugarcane.jpg",
+    "sunflower.jpg",
+    "tea.jpg",
+    "tobacco-plant.jpg",
+    "tomato.jpg",
+    "vigna-radiati(mung).jpg",
+    "wheat.jpg"
+]
 
-def create_30_tips():
+# --------------------------
+# 2.2 Create Tips from Crop Filenames
+# --------------------------
+def create_tips_for_crops():
     """
-    Returns a list of 30 randomly sampled tips from the 5 BASE_TIPS.
-    Each will have a unique crop_name like 'Crop1', 'Crop2', etc.
+    Returns a list of tips where each tip is assigned to one of the 30 crops.
+    'crop_name' is derived from the filename by removing '.jpg'.
     """
     tips_data = []
-    for i in range(1, 31):
+    for crop_image in CROP_FILENAMES:
+        crop_name = crop_image.replace(".jpg", "")
         chosen_tip = random.choice(BASE_TIPS)
         tips_data.append({
-            "crop_name": f"Crop{i}",
+            "crop_name": crop_name,
             "crop_tips": chosen_tip["crop_tips"]
         })
     return tips_data
 
-
+# --------------------------
+# 2.3 Create 30 Diseases
+# --------------------------
 def create_30_diseases():
     """
     Returns a list of 30 randomly sampled diseases from the 5 BASE_DISEASES.
     Each will have a unique disease_name like 'Disease1', 'Disease2', etc.
+    Now also includes 'crop_name', chosen from the 30 filenames.
     """
     diseases_data = []
     for i in range(1, 31):
         chosen_disease = random.choice(BASE_DISEASES)
+        random_crop = random.choice(CROP_FILENAMES)
+        crop_name = random_crop.replace(".jpg", "")
+
         diseases_data.append({
             "disease_name": f"Disease{i}",
             "cure": chosen_disease["cure"],
-            "commonness": chosen_disease["commonness"]
+            "commonness": chosen_disease["commonness"],
+            "crop_name": crop_name
         })
     return diseases_data
 
-
+# --------------------------
+# 2.4 Create 30 News Items
+# --------------------------
 def create_30_news_items():
     """
     Returns a list of 30 randomly sampled news items from the 5 BASE_NEWS.
@@ -125,22 +228,17 @@ def create_30_news_items():
         })
     return news_data
 
-
 def main():
     """
     Main function to:
       1) Log in as Admin
-      2) Generate 30 tips, 30 diseases, and 30 news items (randomly from base data)
-      3) Send them to the respective endpoints
+      2) Generate tips for each of the 30 crop filenames (removing .jpg)
+      3) Also generate 30 diseases (with crop_name) and 30 news items
+      4) Send them to the respective endpoints
     """
-    # --------------------------
-    # 3. Create a Session object
-    # --------------------------
     session = requests.Session()
 
-    # --------------------------
-    # 4. Admin Login
-    # --------------------------
+    # 1) Admin Login
     print("Attempting admin login...")
     login_payload = {
         "username": ADMIN_USERNAME,
@@ -161,7 +259,6 @@ def main():
             csrftoken = data.get("csrftoken")
             print("[SUCCESS] Admin login successful.")
 
-            # IMPORTANT: Remove domain=None to avoid the AttributeError
             if sessionid:
                 session.cookies.set("sessionid", sessionid)  # No domain argument
             if csrftoken:
@@ -174,11 +271,9 @@ def main():
         print(login_response.text)
         return
 
-    # --------------------------
-    # 5. Create and Send 30 Tips
-    # --------------------------
-    print("\nAdding/Updating 30 tips...")
-    tips_data = create_30_tips()
+    # 2) Create and Send Tips
+    print("\nAdding/Updating tips for the 30 provided crops...")
+    tips_data = create_tips_for_crops()
     for tip in tips_data:
         try:
             resp = session.post(ADD_TIP_URL, json=tip)
@@ -187,9 +282,7 @@ def main():
         except requests.exceptions.RequestException as e:
             print(f"[ERROR] Could not add/update tip for {tip['crop_name']}: {e}")
 
-    # --------------------------
-    # 6. Create and Send 30 Diseases
-    # --------------------------
+    # 3) Create and Send Diseases
     print("\nAdding/Updating 30 diseases...")
     diseases_data = create_30_diseases()
     for disease in diseases_data:
@@ -200,9 +293,7 @@ def main():
         except requests.exceptions.RequestException as e:
             print(f"[ERROR] Could not add/update disease {disease['disease_name']}: {e}")
 
-    # --------------------------
-    # 7. Create and Send 30 News
-    # --------------------------
+    # 4) Create and Send News
     print("\nAdding/Updating 30 news items...")
     news_data = create_30_news_items()
     for news_item in news_data:
@@ -213,8 +304,7 @@ def main():
         except requests.exceptions.RequestException as e:
             print(f"[ERROR] Could not add/update news '{news_item['title']}': {e}")
 
-    print("\nAll done! Check your database to see if the 30 entries per category were added or updated.")
-
+    print("\nAll done! Check your database to see if the entries were added or updated.")
 
 if __name__ == "__main__":
     main()

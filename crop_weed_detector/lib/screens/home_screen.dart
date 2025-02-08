@@ -4,8 +4,11 @@ import 'dart:io';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:lottie/lottie.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+// Removed direct http and json usage, as it's now in ApiService
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
+
+import 'package:crop_weed_detector/services/api_service.dart'; // <-- Important: import your ApiService here
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -44,6 +47,9 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
+  // ---------------------------------------------------------
+  // UPDATED: Uses ApiService to upload the image
+  // ---------------------------------------------------------
   Future<void> _uploadImage() async {
     if (_image == null || _selectedModel == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -58,24 +64,15 @@ class _HomeScreenState extends State<HomeScreen>
     setState(() => _isUploading = true);
 
     try {
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('http://10.0.2.2:8000/api/upload'),
+      // Call our new ApiService method
+      final responseData = await ApiService.uploadImage(
+        imageFile: _image!,
+        model: _selectedModel!,
+        mode: _selectedMode,
       );
-
-      request.files.add(
-        await http.MultipartFile.fromPath('image', _image!.path),
-      );
-
-      request.fields['model'] = _selectedModel!;
-      request.fields['mode'] = _selectedMode;
-
-      var response = await request.send();
-      var responseData = await response.stream.bytesToString();
-      var result = json.decode(responseData);
 
       setState(() {
-        _result = result;
+        _result = responseData;
         _isUploading = false;
       });
 
@@ -91,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen>
       setState(() => _isUploading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error: $e'),
+          content: Text('Error uploading image: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -148,26 +145,35 @@ class _HomeScreenState extends State<HomeScreen>
                     'assets/success_animation.json',
                     width: 100,
                     height: 100,
+                    repeat: false,
                   ),
                 ),
                 const SizedBox(height: 20),
                 if (_selectedMode == 'classify' && _result != null) ...[
                   _buildResultText('Class', _result!['class_name']),
-                  _buildResultText('Confidence',
-                      '${(_result!['confidence'] * 100).toStringAsFixed(2)}%'),
+                  _buildResultText(
+                    'Confidence',
+                    '${((double.tryParse(_result!['confidence'].toString()) ?? 0.0) * 100).toStringAsFixed(2)}%',
+                  ),
                   _buildResultText('Description', _result!['wiki_summary']),
                   TextButton(
                     onPressed: () {
-                      // Launch URL using url_launcher package
+                      // Possibly open a URL using url_launcher
                     },
-                    child: Text('Learn More',
-                        style: TextStyle(color: Colors.blue.shade300)),
+                    child: Text(
+                      'Learn More',
+                      style: TextStyle(color: Colors.blue.shade300),
+                    ),
                   ),
                 ] else if (_selectedMode == 'detect' && _result != null) ...[
                   _buildResultText(
-                      'Crops Detected', _result!['crop_count'].toString()),
+                    'Crops Detected',
+                    _result!['crop_count'].toString(),
+                  ),
                   _buildResultText(
-                      'Weeds Detected', _result!['weed_count'].toString()),
+                    'Weeds Detected',
+                    _result!['weed_count'].toString(),
+                  ),
                 ],
               ],
             ),
@@ -204,6 +210,9 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  // ---------------------------------------------------------
+  // UI BUILD
+  // ---------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -625,7 +634,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-// Extension to capitalize first letter
+// Optional extension to capitalize a string
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1)}";

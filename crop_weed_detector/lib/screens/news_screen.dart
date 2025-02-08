@@ -36,6 +36,8 @@ class _NewsScreenState extends State<NewsScreen> {
       body: RefreshIndicator(
         onRefresh: () async => _refreshNews(),
         child: CustomScrollView(
+          // -- Enable bouncing scroll physics here --
+          physics: const BouncingScrollPhysics(),
           controller: _scrollController,
           slivers: [
             _buildSliverAppBar(),
@@ -174,10 +176,12 @@ class _NewsScreenState extends State<NewsScreen> {
         (context, index) {
           return AnimationConfiguration.staggeredList(
             position: index,
-            duration: const Duration(milliseconds: 375),
+            duration: const Duration(milliseconds: 200),
             child: SlideAnimation(
               verticalOffset: 50.0,
+              duration: const Duration(milliseconds: 200),
               child: FadeInAnimation(
+                duration: const Duration(milliseconds: 200),
                 child: _buildNewsCard(news[index]),
               ),
             ),
@@ -304,6 +308,8 @@ class NewsDetailSheet extends StatelessWidget {
             ),
             Expanded(
               child: ListView(
+                // -- Bouncing scroll physics for the bottom sheet too --
+                physics: const BouncingScrollPhysics(),
                 controller: controller,
                 padding: const EdgeInsets.all(20),
                 children: [
