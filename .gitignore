@@ -1,2 +1,4 @@
 models/
 media/
+db.sqlite3
+models.7z

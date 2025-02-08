@@ -14,7 +14,7 @@ from typing import Dict, Tuple, Optional
 
 
 class AIClass:
-    BASE_PATH = "D:\\ZraeGlobal\\CropAndWeedD\\Crop_and_Weed_Detector\\models"
+    BASE_PATH = ".\\models"
     CLASSIFICATION_PATH = os.path.join(BASE_PATH, "classification")
     DETECTION_PATH = os.path.join(BASE_PATH, "detection")
 
