@@ -322,10 +322,9 @@ class _DiseasesScreenState extends State<DiseasesScreen> {
       floatingActionButton: AnimatedScale(
         scale: _isLoading ? 0.0 : 1.0,
         duration: const Duration(milliseconds: 300),
-        child: FloatingActionButton.extended(
+        child: FloatingActionButton(
           onPressed: _loadDiseases,
-          icon: const Icon(Icons.refresh),
-          label: const Text("Refresh"),
+          child: const Icon(Icons.refresh),
         ),
       ),
     );
