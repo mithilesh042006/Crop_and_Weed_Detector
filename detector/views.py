@@ -24,7 +24,7 @@ def upload_image(request):
       - model (str)
       - mode (str): either 'classify' or 'detect'
       - (optional) image_id
-    Calls AI logic, stores the record in DB, and returns relevant info.
+    Calls AI logic, stores the record in DB (only if classify), and returns relevant info.
     """
     if request.method == 'POST':
         image_data = None
@@ -40,19 +40,15 @@ def upload_image(request):
                 return JsonResponse({"error": "Invalid JSON format"}, status=400)
 
             model_choice = body.get("model")
-            mode = body.get("mode")  # new parameter
+            mode = body.get("mode")
             image_id = body.get("image_id", None)
-
-            # For a purely JSON-based upload, you'd need base64 or some data. 
-            # Otherwise, you'd typically get the file from request.FILES. 
-            # This example assumes your real flow uses form-data for the actual image.
-            # If you do pure JSON image uploading, handle it here.
+            # If you do pure JSON-based image upload, handle base64 or similar approach.
 
         else:
             # Form-data approach
             image_data = request.FILES.get("image")
             model_choice = request.POST.get("model")
-            mode = request.POST.get("mode")  # new parameter
+            mode = request.POST.get("mode")
             image_id = request.POST.get("image_id", None)
 
         # Validate required fields
@@ -65,20 +61,20 @@ def upload_image(request):
         if not mode:
             return JsonResponse({"error": "No mode provided (must be 'classify' or 'detect')"}, status=400)
 
-        # Create a DB record to track
-        record = ImageRecord.objects.create(
-            user=request.user,
-            image_data=image_data,
-            model_chosen=model_choice,
-            summary="Processing...",
-            crop_name="Unknown"
-        )
-
         # Initialize AIClass for processing
         ai = AIClass()
+
         try:
-            # Perform the requested operation
             if mode.lower() == "classify":
+                # Create a DB record to track classification
+                record = ImageRecord.objects.create(
+                    user=request.user,
+                    image_data=image_data,
+                    model_chosen=model_choice,
+                    summary="Processing...",
+                    crop_name="Unknown"
+                )
+
                 # Convert the incoming file to PIL
                 pil_image = Image.open(image_data).convert("RGB")
                 cls_result = ai.classify(pil_image, model_choice)
@@ -86,9 +82,27 @@ def upload_image(request):
                 if "error" in cls_result:
                     return JsonResponse({"error": cls_result["error"]}, status=400)
 
+                # Retrieve Wikipedia data for the predicted class
+                title, full_summary, url = ai.retrieve_data(cls_result["class_name"])
+                
+                # Fallback if no page found
+                if not title:
+                    # You can choose to handle this differently, e.g. "Unknown" or "No data found"
+                    wiki_title = "No data found"
+                    wiki_summary = "No summary available"
+                    wiki_url = None
+                else:
+                    wiki_title = title
+                    wiki_summary = full_summary  # entire summary (no chopping)
+                    wiki_url = url
+
+                # Update the record with classification results and the full summary from Wikipedia
                 record.crop_name = cls_result["class_name"]
-                record.summary = f"Confidence: {cls_result['confidence']}"
+                record.summary = wiki_summary  # store entire summary in DB
                 record.save()
+
+                # Return the first 500 chars of the summary to keep the response concise
+                truncated_summary = wiki_summary[:500] if wiki_summary else ""
 
                 response_data = {
                     "message": "Image classified successfully",
@@ -97,31 +111,29 @@ def upload_image(request):
                     "image_id": record.id,
                     "class_name": cls_result["class_name"],
                     "confidence": cls_result["confidence"],
+                    "wiki_title": wiki_title,
+                    "wiki_summary": truncated_summary,
+                    "wiki_url": wiki_url
                 }
                 return JsonResponse(response_data, status=200)
 
             elif mode.lower() == "detect":
-                # We'll run detection and store the annotated file
-                annotated_file, weed_count, crop_count = ai.detect(image_data, model_choice, record.id)
+                # Do NOT create or update a database record. 
+                # We only perform detection and return the result in JSON.
+                annotated_file, weed_count, crop_count = ai.detect(image_data, model_choice, random.randint(1000,9999))
 
                 if annotated_file is None:
                     return JsonResponse({"error": f"Detection model '{model_choice}' not found."}, status=400)
 
-                # Store the annotated file
-                record.processed_image = annotated_file
-                # Example usage for summary:
-                record.crop_name = f"Detected objects"
-                record.summary = f"Weeds: {weed_count}, Crops: {crop_count}"
-                record.save()
-
+                # Convert ContentFile to a base64 or serve it differently if you want to preview it in JSON
+                # For now, just returning counts in the response
                 response_data = {
                     "message": "Image detected successfully",
                     "mode": mode,
                     "model_chosen": model_choice,
-                    "image_id": record.id,
                     "weed_count": weed_count,
                     "crop_count": crop_count,
-                    "processed_image_url": record.processed_image.url
+                    # "processed_image_url": "some URL if you want to serve the annotated image from a temp location"
                 }
                 return JsonResponse(response_data, status=200)
 
