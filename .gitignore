@@ -1,8 +1,5 @@
 models/
 media/
-<<<<<<< HEAD
-db.sqlite3
-=======
 db.sqlite3
 models.7z
->>>>>>> 6fd143ad034741396292bd8b776d5671d47e02b4
+**/__pycache__/
