@@ -1,5 +1,6 @@
 models/
-media/
+media/processed_images
+media/uploaded_images
 db.sqlite3
 models.7z
 **/__pycache__/
