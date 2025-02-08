@@ -53,13 +53,13 @@ class NavWrapper extends StatefulWidget {
   _NavWrapperState createState() => _NavWrapperState();
 }
 
-class _NavWrapperState extends State<NavWrapper>
-    with SingleTickerProviderStateMixin {
+class _NavWrapperState extends State<NavWrapper> with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late rive.RiveAnimationController _menuAnimation;
   late AnimationController _fadeController;
-
+  
+  // Remove const from the list since widget instances aren't const
   final List<Widget> _screens = [
     HomeScreen(),
     TipsScreen(),
@@ -95,7 +95,7 @@ class _NavWrapperState extends State<NavWrapper>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: SideMenu(),
+      drawer: SideMenu(), // Remove const
       appBar: AppBar(
         title: const Text(
           "Crop & Weed Detector",
