@@ -27,7 +27,7 @@ class NavWrapper extends StatefulWidget {
   _NavWrapperState createState() => _NavWrapperState();
 }
 
-class _NavWrapperState extends State<NavWrapper> {
+class _NavWrapperState extends State<NavWrapper> 
   int _selectedIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>(); // 🔥 Used to open drawer
   final List<Widget> _screens = [
