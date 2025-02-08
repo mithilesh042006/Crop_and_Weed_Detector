@@ -233,42 +233,17 @@ class AIClass:
 
         return annotated_file, weed_count, crop_count
 
-
-# -----------------------------------------------------------------
-# Testing Logic (based on your requested snippet)
-# -----------------------------------------------------------------
-if __name__ == "__main__":
-    # Initialize AIClass
-    ai = AIClass()
-
-    try:
-        # Load an image for testing
-        test_image_path = "E:\\FinalYearProjects\\Crop-Yield-Prediction\\sample_images\\samples\\Cherry\\image15.jpeg"
-        test_image = Image.open(test_image_path).convert("RGB")
-
-        # 1. Test classification
-        classification_result = ai.classify(test_image, "resnet")
-        print("Classification Result:", classification_result)
-
-        # 2. Test detection
-        detection_model = "yolov8_m"
-        image_id = random.randint(1000, 9999)
-
-        # Convert the PIL image to an in-memory file (BytesIO)
-        img_io = BytesIO()
-        test_image.save(img_io, format="PNG")
-        img_io.seek(0)
-
-        processed_image, weed_count, crop_count = ai.detect(img_io, detection_model, image_id)
-        print(f"Detection Model: {detection_model}")
-        print(f"Weed Count: {weed_count}, Crop Count: {crop_count}")
-
-        # Save the processed detection image
-        annotated_filename = f"annotated_{image_id}.png"
-        with open(annotated_filename, "wb") as f:
-            f.write(processed_image.read())
-        print(f"Annotated image saved as {annotated_filename}")
-
-    finally:
-        # Close resources (important to avoid the 'NoneType' error in Wikipedia.__del__)
-        ai.close()
+    def retrieve_data(self, class_name: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+        """
+        Retrieve data about the given class name using Wikipedia.
+        Returns a tuple (title, summary, url), or (None, None, None) if an error occurs or page not found.
+        """
+        try:
+            page = self.wiki_api.page(class_name)
+            if not page.exists():
+                return None, None, None
+            # Return the entire summary to avoid indexing issues
+            return page.title, page.summary, page.fullurl
+        except Exception:
+            # In a real scenario, you'd log the exception
+            return None, None, None
