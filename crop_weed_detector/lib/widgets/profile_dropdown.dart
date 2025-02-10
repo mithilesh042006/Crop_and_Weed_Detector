@@ -1,8 +1,6 @@
-// profile_dropdown.dart
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:crop_weed_detector/screens/auth_screen.dart';
+import 'package:crop_weed_detector/screens/auth_screen.dart'hide ApiService;
 import 'package:crop_weed_detector/services/api_service.dart';
 
 class ProfileDropdown extends StatefulWidget {
@@ -29,7 +27,6 @@ class _ProfileDropdownState extends State<ProfileDropdown>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-
     _rotateAnimation = Tween<double>(begin: 0, end: 0.5).animate(
       CurvedAnimation(
         parent: _animationController,
@@ -45,7 +42,7 @@ class _ProfileDropdownState extends State<ProfileDropdown>
         _username = username ?? 'User';
       });
     } catch (e) {
-      print('Error loading username: $e');
+      debugPrint('Error loading username: $e');
       setState(() {
         _username = 'User';
       });
@@ -121,6 +118,7 @@ class _ProfileDropdownState extends State<ProfileDropdown>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    // User Info Section
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -135,7 +133,9 @@ class _ProfileDropdownState extends State<ProfileDropdown>
                             radius: 24,
                             backgroundColor: Colors.blue.shade100,
                             child: Text(
-                              _username[0].toUpperCase(),
+                              _username.isNotEmpty
+                                  ? _username[0].toUpperCase()
+                                  : 'U',
                               style: TextStyle(
                                 color: Colors.blue.shade700,
                                 fontSize: 20,
@@ -171,13 +171,15 @@ class _ProfileDropdownState extends State<ProfileDropdown>
                         ],
                       ),
                     ),
+
+                    // Menu Items
                     _buildMenuItem(
                       icon: Icons.person_outline,
                       title: 'My Profile',
                       subtitle: 'View and edit your profile',
                       onTap: () {
                         _toggleMenu();
-                        // Navigate to profile
+                        // TODO: Navigate or handle accordingly
                       },
                     ),
                     _buildMenuItem(
@@ -186,7 +188,7 @@ class _ProfileDropdownState extends State<ProfileDropdown>
                       subtitle: 'App preferences and settings',
                       onTap: () {
                         _toggleMenu();
-                        // Navigate to settings
+                        // TODO: Navigate or handle accordingly
                       },
                     ),
                     _buildMenuItem(
@@ -195,7 +197,7 @@ class _ProfileDropdownState extends State<ProfileDropdown>
                       subtitle: 'Get help and contact support',
                       onTap: () {
                         _toggleMenu();
-                        // Navigate to help
+                        // TODO: Navigate or handle accordingly
                       },
                     ),
                     const Divider(height: 1),
@@ -220,7 +222,7 @@ class _ProfileDropdownState extends State<ProfileDropdown>
   }
 
   Future<void> _showLogoutDialog(BuildContext context) async {
-    bool confirm = await showDialog(
+    final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
@@ -233,7 +235,8 @@ class _ProfileDropdownState extends State<ProfileDropdown>
           ),
         ),
         content: const Text(
-          'Are you sure you want to logout? You\'ll need to sign in again to access your account.',
+          'Are you sure you want to logout? You\'ll need to sign in again '
+          'to access your account.',
           style: TextStyle(fontSize: 16),
         ),
         actions: [
@@ -268,7 +271,10 @@ class _ProfileDropdownState extends State<ProfileDropdown>
 
     if (confirm) {
       try {
-        // Show loading indicator
+        // (A) Debug print before clearing storage
+        debugPrint("=== Attempting to call clearLocalStorage() ===");
+
+        // Show a loading indicator
         if (mounted) {
           showDialog(
             context: context,
@@ -279,19 +285,22 @@ class _ProfileDropdownState extends State<ProfileDropdown>
           );
         }
 
-        // Clear local storage using ApiService
+        // Clear local storage (SharedPreferences)
         await ApiService.clearLocalStorage();
 
-        // Remove loading indicator
+        // Remove the loading indicator
         if (mounted) {
           Navigator.pop(context);
         }
 
-        // Navigate to auth screen
+        // (B) Debug print before navigating
+        debugPrint("=== Attempting to navigate to AuthScreen... ===");
+
+        // Navigate to AuthScreen, removing all previous routes
         if (mounted) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) =>  AuthScreen()),
-            (Route<dynamic> route) => false,
+          Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const AuthScreen()),
+            (route) => false,
           );
         }
 
@@ -305,7 +314,7 @@ class _ProfileDropdownState extends State<ProfileDropdown>
           );
         }
       } catch (e) {
-        // Remove loading indicator if it's showing
+        // Remove loading indicator if it's still up
         if (mounted) {
           Navigator.pop(context);
         }
