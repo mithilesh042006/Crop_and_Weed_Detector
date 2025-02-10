@@ -4,11 +4,8 @@ import 'dart:io';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:lottie/lottie.dart';
-// Removed direct http and json usage, as it's now in ApiService
-// import 'dart:convert';
-// import 'package:http/http.dart' as http;
-
-import 'package:crop_weed_detector/services/api_service.dart'; // <-- Important: import your ApiService here
+import 'package:url_launcher/url_launcher.dart';
+import 'package:crop_weed_detector/services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -47,9 +44,24 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
-  // ---------------------------------------------------------
-  // UPDATED: Uses ApiService to upload the image
-  // ---------------------------------------------------------
+  Future<void> _launchWikiUrl(String? url) async {
+    if (url == null) return;
+    
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not launch Wikipedia page'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _uploadImage() async {
     if (_image == null || _selectedModel == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -64,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen>
     setState(() => _isUploading = true);
 
     try {
-      // Call our new ApiService method
       final responseData = await ApiService.uploadImage(
         imageFile: _image!,
         model: _selectedModel!,
@@ -86,12 +97,14 @@ class _HomeScreenState extends State<HomeScreen>
       }
     } catch (e) {
       setState(() => _isUploading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error uploading image: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error uploading image: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -155,16 +168,30 @@ class _HomeScreenState extends State<HomeScreen>
                     'Confidence',
                     '${((double.tryParse(_result!['confidence'].toString()) ?? 0.0) * 100).toStringAsFixed(2)}%',
                   ),
-                  _buildResultText('Description', _result!['wiki_summary']),
-                  TextButton(
-                    onPressed: () {
-                      // Possibly open a URL using url_launcher
-                    },
-                    child: Text(
-                      'Learn More',
-                      style: TextStyle(color: Colors.blue.shade300),
+                  if (_result!['wiki_title'] != null)
+                    _buildResultText('Wikipedia Title', _result!['wiki_title']),
+                  if (_result!['wiki_summary'] != null)
+                    _buildResultText('Description', _result!['wiki_summary']),
+                  if (_result!['wiki_url'] != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _launchWikiUrl(_result!['wiki_url']),
+                        icon: const Icon(Icons.launch),
+                        label: const Text('View on Wikipedia'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.teal.shade400,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
                 ] else if (_selectedMode == 'detect' && _result != null) ...[
                   _buildResultText(
                     'Crops Detected',
@@ -210,9 +237,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // ---------------------------------------------------------
-  // UI BUILD
-  // ---------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -417,8 +441,7 @@ class _HomeScreenState extends State<HomeScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color:
-                isSelected ? Colors.teal.withOpacity(0.3) : Colors.transparent,
+            color: isSelected ? Colors.teal.withOpacity(0.3) : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: isSelected ? Colors.white70 : Colors.white30,
@@ -634,7 +657,6 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-// Optional extension to capitalize a string
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1)}";
