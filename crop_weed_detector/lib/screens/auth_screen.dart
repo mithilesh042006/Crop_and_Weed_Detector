@@ -63,7 +63,6 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       });
     }
   }
-
   void _checkPasswordStrength() {
     String password = _passwordController.text;
     
@@ -110,6 +109,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
     return _hasMinLength && _hasUppercase && _hasLowercase && 
            _hasNumber && _hasSpecialChar;
   }
+
   Future<void> _authenticate(bool isLogin) async {
     if (!isLogin) {
       if (!_isPasswordValid()) {
@@ -171,7 +171,6 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       if (mounted) setState(() => _isLoading = false);
     }
   }
-
   Future<void> _showBaseUrlDialog() async {
     TextEditingController baseUrlController = TextEditingController(text: ApiService.baseUrl);
 
@@ -315,13 +314,15 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: _tabController.index == 0 ? 320 : 520,
+                          Container(
+                            height: 320, // Fixed height for both tabs
                             child: TabBarView(
                               controller: _tabController,
                               children: [
                                 _buildLoginForm(),
-                                _buildRegisterForm(),
+                                SingleChildScrollView(
+                                  child: _buildRegisterForm(),
+                                ),
                               ],
                             ),
                           ),
@@ -364,44 +365,43 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
     );
   }
   Widget _buildRegisterForm() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            _buildTextField(
-              controller: _usernameController,
-              hint: "Username",
-              icon: Icons.person_outline,
-            ).animate().slideX(),
-            const SizedBox(height: 20),
-            _buildTextField(
-              controller: _passwordController,
-              hint: "Password",
-              icon: Icons.lock_outline,
-              isPassword: true,
-              obscureText: _obscurePassword,
-              onToggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
-            ).animate().slideX(delay: 200.ms),
-            if (_passwordController.text.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              _buildStrengthIndicator(),
-            ],
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildTextField(
+            controller: _usernameController,
+            hint: "Username",
+            icon: Icons.person_outline,
+          ).animate().slideX(),
+          const SizedBox(height: 20),
+          _buildTextField(
+            controller: _passwordController,
+            hint: "Password",
+            icon: Icons.lock_outline,
+            isPassword: true,
+            obscureText: _obscurePassword,
+            onToggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
+          ).animate().slideX(delay: 200.ms),
+          if (_passwordController.text.isNotEmpty) ...[
             const SizedBox(height: 10),
-            _buildPasswordRequirements(),
-            const SizedBox(height: 20),
-            _buildTextField(
-              controller: _confirmPasswordController,
-              hint: "Confirm Password",
-              icon: Icons.lock_outline,
-              isPassword: true,
-              obscureText: _obscureConfirmPassword,
-              onToggleVisibility: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-            ).animate().slideX(delay: 400.ms),
-            const SizedBox(height: 30),
-            _buildAuthButton("REGISTER", () => _authenticate(false)),
+            _buildStrengthIndicator(),
           ],
-        ),
+          const SizedBox(height: 10),
+          _buildPasswordRequirements(),
+          const SizedBox(height: 20),
+          _buildTextField(
+            controller: _confirmPasswordController,
+            hint: "Confirm Password",
+            icon: Icons.lock_outline,
+            isPassword: true,
+            obscureText: _obscureConfirmPassword,
+            onToggleVisibility: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+          ).animate().slideX(delay: 400.ms),
+          const SizedBox(height: 30),
+          _buildAuthButton("REGISTER", () => _authenticate(false)),
+        ],
       ),
     );
   }
