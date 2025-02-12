@@ -59,4 +59,6 @@ export const addTipAPI = async (data) => API.post("/admin_dashboard/add_tip", da
 export const deleteTipAPI = async (cropName) =>
   API.delete("/admin_dashboard/delete_tip", { data: { crop_name: cropName } });
 
+export const fetchHistoryAPI = async () => API.get("/api/history");
+
 export default API;

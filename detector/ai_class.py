@@ -23,19 +23,19 @@ class AIClass:
     CLASSIFICATION_MODELS = {
         "resnet": {
             "filename": "ResNet50_finetuned.pth",
-            "json": "ResNet50_cls_idx.json",
+            "json": "cls_idx.json",
             "model": models.resnet50,
             "weights": models.ResNet50_Weights.IMAGENET1K_V2,
         },
         "mobilenet": {
             "filename": "MobileNetV3_finetuned.pth",
-            "json": "MobileNetV3_cls_idx.json",
+            "json": "cls_idx.json",
             "model": models.mobilenet_v3_large,
             "weights": models.MobileNet_V3_Large_Weights.IMAGENET1K_V2,
         },
         "efficientnet": {
             "filename": "EfficientNet_finetuned.pth",
-            "json": "EfficientNet_cls_idx.json",
+            "json": "cls_idx.json",
             "model": models.efficientnet_b0,
             "weights": models.EfficientNet_B0_Weights.IMAGENET1K_V1,
         },

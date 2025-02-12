@@ -1,3 +1,5 @@
+// src/main.jsx
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -7,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Tips from "./pages/Tips";
 import Diseases from "./pages/Diseases";
 import News from "./pages/News";
+import UserHistory from "./pages/UserHistory"; // <-- NEW import
 import "antd/dist/reset.css"; // Ant Design CSS reset
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -24,6 +27,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="tips" element={<Tips />} />
         <Route path="diseases" element={<Diseases />} />
         <Route path="news" element={<News />} />
+        {/* NEW: user history route */}
+        <Route path="user_history" element={<UserHistory />} />
       </Route>
     </Routes>
   </BrowserRouter>

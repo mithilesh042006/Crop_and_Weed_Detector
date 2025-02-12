@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:lottie/lottie.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:crop_weed_detector/services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,7 +14,8 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   File? _image;
   String? _selectedModel;
   String _selectedMode = 'classify'; // Default mode
@@ -43,6 +44,24 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  Future<void> _launchWikiUrl(String? url) async {
+    if (url == null) return;
+    
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not launch Wikipedia page'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _uploadImage() async {
     if (_image == null || _selectedModel == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -57,32 +76,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     setState(() => _isUploading = true);
 
     try {
-      // Create form data
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('http://your-backend-url/api/upload'), // Replace with actual API endpoint
+      final responseData = await ApiService.uploadImage(
+        imageFile: _image!,
+        model: _selectedModel!,
+        mode: _selectedMode,
       );
-
-      // Add file
-      request.files.add(
-        await http.MultipartFile.fromPath('image', _image!.path),
-      );
-
-      // Add other fields
-      request.fields['model'] = _selectedModel!;
-      request.fields['mode'] = _selectedMode;
-
-      // Send request
-      var response = await request.send();
-      var responseData = await response.stream.bytesToString();
-      var result = json.decode(responseData);
 
       setState(() {
-        _result = result;
+        _result = responseData;
         _isUploading = false;
       });
 
-      // Show results
       if (mounted) {
         showModalBottomSheet(
           context: context,
@@ -93,12 +97,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       }
     } catch (e) {
       setState(() => _isUploading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error uploading image: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -152,29 +158,47 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     'assets/success_animation.json',
                     width: 100,
                     height: 100,
+                    repeat: false,
                   ),
                 ),
                 const SizedBox(height: 20),
                 if (_selectedMode == 'classify' && _result != null) ...[
                   _buildResultText('Class', _result!['class_name']),
                   _buildResultText(
-                    'Confidence',
-                    '${(_result!['confidence'] * 100).toStringAsFixed(2)}%'
-                  ),
-                  _buildResultText('Description', _result!['wiki_summary']),
-                  TextButton(
-                    onPressed: () {
-                      // Launch URL using url_launcher package
-                      // launchUrl(Uri.parse(_result!['wiki_url']));
-                    },
-                    child: Text(
-                      'Learn More',
-                      style: TextStyle(color: Colors.blue.shade300)
+                    'Confidence',_result!['confidence']),
+                  if (_result!['wiki_title'] != null)
+                    _buildResultText('Wikipedia Title', _result!['wiki_title']),
+                  if (_result!['wiki_summary'] != null)
+                    _buildResultText('Description', _result!['wiki_summary']),
+                  if (_result!['wiki_url'] != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _launchWikiUrl(_result!['wiki_url']),
+                        icon: const Icon(Icons.launch),
+                        label: const Text('View on Wikipedia'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.teal.shade400,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
                 ] else if (_selectedMode == 'detect' && _result != null) ...[
-                  _buildResultText('Crops Detected', _result!['crop_count'].toString()),
-                  _buildResultText('Weeds Detected', _result!['weed_count'].toString()),
+                  _buildResultText(
+                    'Crops Detected',
+                    _result!['crop_count'].toString(),
+                  ),
+                  _buildResultText(
+                    'Weeds Detected',
+                    _result!['weed_count'].toString(),
+                  ),
                 ],
               ],
             ),
@@ -234,7 +258,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Title
                   const Text(
                     "AI Image Analysis",
                     style: TextStyle(
@@ -250,38 +273,26 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       ],
                     ),
                   ).animate().fadeIn().slideY(begin: -0.2),
-
                   const SizedBox(height: 24),
-
-                  // Image Preview
                   _buildImagePreview()
-                    .animate()
-                    .fadeIn(duration: 600.ms)
-                    .scale(delay: 200.ms),
-
+                      .animate()
+                      .fadeIn(duration: 600.ms)
+                      .scale(delay: 200.ms),
                   const SizedBox(height: 24),
-
-                  // Mode Selection
                   _buildModeSelection()
-                    .animate()
-                    .slideX(delay: 200.ms)
-                    .fadeIn(delay: 200.ms),
-
+                      .animate()
+                      .slideX(delay: 200.ms)
+                      .fadeIn(delay: 200.ms),
                   const SizedBox(height: 24),
-
-                  // Model Selection
                   _buildModelSelection()
-                    .animate()
-                    .slideX(delay: 400.ms)
-                    .fadeIn(delay: 400.ms),
-                  
+                      .animate()
+                      .slideX(delay: 400.ms)
+                      .fadeIn(delay: 400.ms),
                   const SizedBox(height: 32),
-
-                  // Upload Button
                   _buildUploadButton()
-                    .animate()
-                    .slideY(delay: 600.ms)
-                    .fadeIn(delay: 600.ms),
+                      .animate()
+                      .slideY(delay: 600.ms)
+                      .fadeIn(delay: 600.ms),
                 ],
               ),
             ),
@@ -387,8 +398,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
+          Colors.white.withOpacity(0.2),
           Colors.white.withOpacity(0.1),
-          Colors.white.withOpacity(0.05),
         ],
       ),
       borderGradient: LinearGradient(
@@ -428,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.white.withOpacity(0.2) : Colors.transparent,
+            color: isSelected ? Colors.teal.withOpacity(0.3) : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: isSelected ? Colors.white70 : Colors.white30,
@@ -457,7 +468,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 8),
           child: Text(
-            "Select Model",
+            _selectedMode == 'classify'
+                ? "Select Classification Model"
+                : "Select Detection Model",
             style: TextStyle(
               color: Colors.white.withOpacity(0.8),
               fontSize: 16,
@@ -465,57 +478,45 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
           ),
         ),
-        GlassmorphicContainer(
-          width: double.infinity,
-          height: 60,
-          borderRadius: 15,
-          blur: 20,
-          border: 2,
-          linearGradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withOpacity(0.1),
-              Colors.white.withOpacity(0.05),
-            ],
-          ),
-          borderGradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withOpacity(0.5),
-              Colors.white.withOpacity(0.1),
-            ],
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.teal.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.3),
+              width: 1,
+            ),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Center(
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedModel,
-                  dropdownColor: Colors.black87,
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                  isExpanded: true,
-                  hint: Text(
-                    "Select ${_selectedMode.capitalize()} Model",
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() => _selectedModel = newValue!);
-                  },
-                  items: _modelChoices[_selectedMode]?.map<DropdownMenuItem<String>>((String model) {
-                    return DropdownMenuItem<String>(
-                      value: model,
-                      child: Text(
-                        model,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    );
-                  }).toList(),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedModel,
+                dropdownColor: Colors.teal.shade900,
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                isExpanded: true,
+                hint: Text(
+                  _selectedMode == 'classify'
+                      ? "Select Classification Model"
+                      : "Select Detection Model",
+                  style: const TextStyle(color: Colors.white70),
                 ),
+                onChanged: (String? newValue) {
+                  setState(() => _selectedModel = newValue!);
+                },
+                items: _modelChoices[_selectedMode]
+                    ?.map<DropdownMenuItem<String>>((String model) {
+                  return DropdownMenuItem<String>(
+                    value: model,
+                    child: Text(
+                      model,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
             ),
           ),
@@ -532,7 +533,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.shade700.withOpacity(0.3),
+            color: Colors.teal.shade700.withOpacity(0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -541,7 +542,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       child: ElevatedButton(
         onPressed: _isUploading ? null : _uploadImage,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green.shade400,
+          backgroundColor: Colors.teal.shade400,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
@@ -554,7 +555,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             const Icon(Icons.upload_rounded),
             const SizedBox(width: 12),
             Text(
-              _isUploading ? "Processing..." : "Start ${_selectedMode.capitalize()}",
+              _isUploading
+                  ? "Processing..."
+                  : "Start ${_selectedMode == 'classify' ? 'Classification' : 'Detection'}",
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -639,7 +642,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         setState(() {
           _image = File(pickedFile.path);
         });
-        // Animate the image appearance
         _loadingController.forward(from: 0);
       }
     } catch (e) {
@@ -653,7 +655,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 }
 
-// Extension to capitalize first letter
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1)}";

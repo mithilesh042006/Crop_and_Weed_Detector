@@ -10,7 +10,7 @@ const AppHeader = () => {
 
   const handleLogout = async () => {
     await axios.get("http://127.0.0.1:8000/auth/logout", { withCredentials: true });
-    navigate("/login");
+    navigate("/auth/admin_login");
   };
 
   return (

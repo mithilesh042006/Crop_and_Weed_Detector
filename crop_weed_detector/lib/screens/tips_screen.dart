@@ -10,7 +10,8 @@ class TipsScreen extends StatefulWidget {
   _TipsScreenState createState() => _TipsScreenState();
 }
 
-class _TipsScreenState extends State<TipsScreen> with SingleTickerProviderStateMixin {
+class _TipsScreenState extends State<TipsScreen>
+    with SingleTickerProviderStateMixin {
   List<dynamic> _tips = [];
   bool _isLoading = true;
   late AnimationController _controller;
@@ -74,8 +75,12 @@ class _TipsScreenState extends State<TipsScreen> with SingleTickerProviderStateM
 
   List<dynamic> get _filteredTips {
     if (_searchQuery.isEmpty) return _tips;
-    return _tips.where((tip) =>
-        tip["crop_name"].toString().toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+    return _tips
+        .where((tip) => tip["crop_name"]
+            .toString()
+            .toLowerCase()
+            .contains(_searchQuery.toLowerCase()))
+        .toList();
   }
 
   void _showTipDetails(Map<String, dynamic> tip) {
@@ -142,6 +147,7 @@ class _TipsScreenState extends State<TipsScreen> with SingleTickerProviderStateM
 
   Widget _buildLoadingGrid() {
     return GridView.builder(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -187,10 +193,13 @@ class _TipsScreenState extends State<TipsScreen> with SingleTickerProviderStateM
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.tips_and_updates_outlined, size: 64, color: Colors.grey[400]),
+          Icon(Icons.tips_and_updates_outlined,
+              size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
-            _searchQuery.isEmpty ? 'No tips available' : 'No matching crops found',
+            _searchQuery.isEmpty
+                ? 'No tips available'
+                : 'No matching crops found',
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -213,6 +222,7 @@ class _TipsScreenState extends State<TipsScreen> with SingleTickerProviderStateM
     return AnimationLimiter(
       child: GridView.builder(
         controller: _scrollController,
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.all(16),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -246,7 +256,8 @@ class _TipsScreenState extends State<TipsScreen> with SingleTickerProviderStateM
           onTap: () => _showTipDetails(tip),
           borderRadius: BorderRadius.circular(15),
           child: Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             elevation: 4,
             child: Container(
               decoration: BoxDecoration(
@@ -266,9 +277,17 @@ class _TipsScreenState extends State<TipsScreen> with SingleTickerProviderStateM
                   Container(
                     padding: const EdgeInsets.all(12),
                     child: Image.asset(
-                      "assets/crops/${tip['crop_name'].toLowerCase()}.png",
+                      "assets/crops/${tip['crop_name'].toLowerCase()}.jpg",
                       height: 80,
                       fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback if the .jpg doesn't exist
+                        return Icon(
+                          Icons.image_not_supported_outlined,
+                          size: 50,
+                          color: Colors.grey[400],
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -305,42 +324,50 @@ class TipDetailsSheet extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              color: Colors.grey[300],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Hero(
-                  tag: 'tip_${tip["crop_name"]}',
-                  child: Center(
-                    child: Image.asset(
-                      "assets/crops/${tip['crop_name'].toLowerCase()}.png",
-                      height: 120,
-                    ),
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(2),
+                  color: Colors.grey[300],
+                ),
+              ),
+              Hero(
+                tag: 'tip_${tip["crop_name"]}',
+                child: Center(
+                  child: Image.asset(
+                    "assets/crops/${tip['crop_name'].toLowerCase()}.jpg",
+                    height: 120,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(
+                        Icons.image_not_supported_outlined,
+                        size: 80,
+                        color: Colors.grey[400],
+                      );
+                    },
                   ),
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  tip["crop_name"],
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                tip["crop_name"],
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 16),
-                const Text(
+              ),
+              const SizedBox(height: 16),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
                   "Growing Tips:",
                   style: TextStyle(
                     fontSize: 18,
@@ -348,29 +375,29 @@ class TipDetailsSheet extends StatelessWidget {
                     color: Colors.green,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  tip["crop_tips"],
-                  style: const TextStyle(fontSize: 16, height: 1.5),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                tip["crop_tips"],
+                style: const TextStyle(fontSize: 16, height: 1.5),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Text("Close"),
                   ),
+                  child: const Text("Close"),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
