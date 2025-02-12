@@ -1,13 +1,26 @@
+import os
+import json
+import random
+import base64
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
-import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings  # <--- to access MEDIA_ROOT, MEDIA_URL
+from django.core.files.storage import default_storage
+
+from PIL import Image
+from io import BytesIO
+
 from .models import ImageRecord
 from .ai_class import AIClass
 from admin_dashboard.models import Tip, Disease, News
+<<<<<<< HEAD
+=======
 from PIL import Image
 import random
+>>>>>>> 2bc2d9532934a96afdb53c1a818b4553e07267ec
 
 from authentication.models import CustomUser
 
@@ -44,7 +57,13 @@ def upload_image(request):
             model_choice = body.get("model")
             mode = body.get("mode")
             image_id = body.get("image_id", None)
+<<<<<<< HEAD
+            # Note: If you do pure JSON-based image upload, you'd handle
+            # base64-decoding or a similar approach here.
+            # For now, this assumes multi-part form data is used for the file.
+=======
 
+>>>>>>> 2bc2d9532934a96afdb53c1a818b4553e07267ec
         else:
             # Form-data approach
             image_data = request.FILES.get("image")
@@ -93,7 +112,7 @@ def upload_image(request):
                     wiki_url = None
                 else:
                     wiki_title = title
-                    wiki_summary = full_summary  # entire summary (no chopping)
+                    wiki_summary = full_summary  # store entire summary
                     wiki_url = url
 
                 # Update the record with classification results
@@ -101,6 +120,12 @@ def upload_image(request):
                 record.summary = wiki_summary
                 record.save()
 
+<<<<<<< HEAD
+                # Truncate summary to first 500 characters for the response
+                truncated_summary = wiki_summary[:500] if wiki_summary else ""
+
+=======
+>>>>>>> 2bc2d9532934a96afdb53c1a818b4553e07267ec
                 response_data = {
                     "message": "Image classified successfully",
                     "mode": mode,
@@ -115,9 +140,17 @@ def upload_image(request):
                 return JsonResponse(response_data, status=200)
 
             elif mode.lower() == "detect":
+<<<<<<< HEAD
+                # Perform detection; no DB record created or updated
+                annotated_file, weed_count, crop_count = ai.detect(
+                    image_data,
+                    model_choice,
+                    random.randint(1000, 9999)
+=======
                 # No DB record; detection-only
                 annotated_file, weed_count, crop_count = ai.detect(
                     image_data, model_choice, random.randint(1000, 9999)
+>>>>>>> 2bc2d9532934a96afdb53c1a818b4553e07267ec
                 )
 
                 if annotated_file is None:
@@ -126,12 +159,42 @@ def upload_image(request):
                         status=400
                     )
 
+<<<<<<< HEAD
+                # ---
+                # 1) Save annotated_file to a 'detected/images/' folder in MEDIA_ROOT
+                # ---
+
+                # Ensure the folder exists
+                detected_folder = os.path.join(settings.MEDIA_ROOT, 'detected', 'images')
+                os.makedirs(detected_folder, exist_ok=True)
+
+                # Generate a unique file name
+                file_name = f"annotated_{random.randint(1000, 9999)}.png"
+                file_path = os.path.join(detected_folder, file_name)
+
+                # Save the content of annotated_file to the disk
+                annotated_file.seek(0)  # ensure pointer is at start
+                with open(file_path, 'wb') as f:
+                    f.write(annotated_file.read())
+
+                # Build an absolute URL to access this image (if you serve media)
+                processed_image_url = request.build_absolute_uri(
+                    os.path.join(settings.MEDIA_URL, 'detected', 'images', file_name)
+                )
+
+=======
+>>>>>>> 2bc2d9532934a96afdb53c1a818b4553e07267ec
                 response_data = {
                     "message": "Image detected successfully",
                     "mode": mode,
                     "model_chosen": model_choice,
                     "weed_count": weed_count,
                     "crop_count": crop_count,
+<<<<<<< HEAD
+                    # Return the annotated image URL instead of Base64
+                    "processed_image_url": processed_image_url
+=======
+>>>>>>> 2bc2d9532934a96afdb53c1a818b4553e07267ec
                 }
                 return JsonResponse(response_data, status=200)
 
@@ -139,7 +202,12 @@ def upload_image(request):
                 return JsonResponse({"error": "Invalid mode (must be 'classify' or 'detect')"}, status=400)
 
         finally:
+<<<<<<< HEAD
+            # Ensure we close the AIClass instance
+            ai.close()
+=======
             ai.close()  # ensure resources are cleaned up
+>>>>>>> 2bc2d9532934a96afdb53c1a818b4553e07267ec
 
     else:
         return JsonResponse({"error": "Method not allowed"}, status=405)
@@ -195,7 +263,12 @@ def history_view(request):
                 "summary": rec.summary,
                 "model_chosen": rec.model_chosen,
                 "crop_name": rec.crop_name,
+<<<<<<< HEAD
+                "processed_image_url": request.build_absolute_uri(rec.processed_image.url)
+                if rec.processed_image else None,
+=======
                 "processed_image_url": image_url,  # <-- Return 'image_data' URL
+>>>>>>> 2bc2d9532934a96afdb53c1a818b4553e07267ec
                 "created_at": rec.created_at,
             })
 
