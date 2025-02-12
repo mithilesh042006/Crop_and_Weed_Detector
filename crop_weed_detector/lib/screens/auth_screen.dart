@@ -63,6 +63,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       });
     }
   }
+
   void _checkPasswordStrength() {
     String password = _passwordController.text;
     
@@ -106,7 +107,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   }
 
   bool _isPasswordValid() {
-    return _hasMinLength && _hasUppercase && _hasLowercase && 
+    return _hasMinLength && _hasUppercase && _hasLowercase &&
            _hasNumber && _hasSpecialChar;
   }
 
@@ -141,15 +142,33 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           : await ApiService.registerUser(_usernameController.text, _passwordController.text);
 
       if (success && mounted) {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const NavWrapper(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          ),
-        );
+        // ---------------------------
+        // MODIFIED LOGIC BELOW
+        // ---------------------------
+        if (isLogin) {
+          // If logging in was successful, go to NavWrapper
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const NavWrapper(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          );
+        } else {
+          // After successful registration, ask user to log in
+          // 1) Switch to the login tab
+          _tabController.animateTo(0);
+
+          // 2) Show success message in a SnackBar
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Registration successful! Please log in.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -171,6 +190,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       if (mounted) setState(() => _isLoading = false);
     }
   }
+
   Future<void> _showBaseUrlDialog() async {
     TextEditingController baseUrlController = TextEditingController(text: ApiService.baseUrl);
 
@@ -364,6 +384,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       ),
     );
   }
+
   Widget _buildRegisterForm() {
     return Padding(
       padding: const EdgeInsets.all(20),
