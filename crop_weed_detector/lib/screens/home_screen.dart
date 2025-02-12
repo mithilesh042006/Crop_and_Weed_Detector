@@ -165,9 +165,7 @@ class _HomeScreenState extends State<HomeScreen>
                 if (_selectedMode == 'classify' && _result != null) ...[
                   _buildResultText('Class', _result!['class_name']),
                   _buildResultText(
-                    'Confidence',
-                    '${((double.tryParse(_result!['confidence'].toString()) ?? 0.0) * 100).toStringAsFixed(2)}%',
-                  ),
+                    'Confidence',_result!['confidence']),
                   if (_result!['wiki_title'] != null)
                     _buildResultText('Wikipedia Title', _result!['wiki_title']),
                   if (_result!['wiki_summary'] != null)
