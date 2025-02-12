@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:lottie/lottie.dart';
+// The critical import for canLaunchUrl and launchUrl:
 import 'package:url_launcher/url_launcher.dart';
+
 import 'package:crop_weed_detector/services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -44,9 +46,10 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
+  // Updated to use the newer canLaunchUrl and launchUrl from url_launcher
   Future<void> _launchWikiUrl(String? url) async {
     if (url == null) return;
-    
+
     final Uri uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -142,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Draggable handle
                 Center(
                   child: Container(
                     width: 40,
@@ -153,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                   ),
                 ),
+                // Success animation on top
                 Center(
                   child: Lottie.asset(
                     'assets/success_animation.json',
@@ -162,10 +167,11 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
                 const SizedBox(height: 20),
+
+                // CLASSIFICATION RESULTS
                 if (_selectedMode == 'classify' && _result != null) ...[
                   _buildResultText('Class', _result!['class_name']),
-                  _buildResultText(
-                    'Confidence',_result!['confidence']),
+                  _buildResultText('Confidence', _result!['confidence']),
                   if (_result!['wiki_title'] != null)
                     _buildResultText('Wikipedia Title', _result!['wiki_title']),
                   if (_result!['wiki_summary'] != null)
@@ -190,7 +196,10 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       ),
                     ),
-                ] else if (_selectedMode == 'detect' && _result != null) ...[
+                ]
+
+                // DETECTION RESULTS
+                else if (_selectedMode == 'detect' && _result != null) ...[
                   _buildResultText(
                     'Crops Detected',
                     _result!['crop_count'].toString(),
@@ -199,6 +208,17 @@ class _HomeScreenState extends State<HomeScreen>
                     'Weeds Detected',
                     _result!['weed_count'].toString(),
                   ),
+                  const SizedBox(height: 20),
+                  // Show the annotated image if available
+                  if (_result!['processed_image_url'] != null)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        _result!['processed_image_url'],
+                        fit: BoxFit.cover,
+                        height: 300, // limit the max height
+                      ),
+                    ),
                 ],
               ],
             ),
@@ -432,14 +452,15 @@ class _HomeScreenState extends State<HomeScreen>
         onTap: () {
           setState(() {
             _selectedMode = mode;
-            _selectedModel = null;
+            _selectedModel = null; // reset model if user switches mode
           });
         },
         borderRadius: BorderRadius.circular(10),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.teal.withOpacity(0.3) : Colors.transparent,
+            color:
+                isSelected ? Colors.teal.withOpacity(0.3) : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: isSelected ? Colors.white70 : Colors.white30,
