@@ -200,16 +200,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                 // DETECTION RESULTS
                 else if (_selectedMode == 'detect' && _result != null) ...[
-                  _buildResultText(
-                    'Crops Detected',
-                    _result!['crop_count'].toString(),
-                  ),
-                  _buildResultText(
-                    'Weeds Detected',
-                    _result!['weed_count'].toString(),
-                  ),
-                  const SizedBox(height: 20),
-                  // Show the annotated image if available
+                  // 1) Show the annotated image first
                   if (_result!['processed_image_url'] != null)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
@@ -219,6 +210,16 @@ class _HomeScreenState extends State<HomeScreen>
                         height: 300, // limit the max height
                       ),
                     ),
+                  const SizedBox(height: 20),
+                  // 2) Then show Crop/Weed counts
+                  _buildResultText(
+                    'Crops Detected',
+                    _result!['crop_count'].toString(),
+                  ),
+                  _buildResultText(
+                    'Weeds Detected',
+                    _result!['weed_count'].toString(),
+                  ),
                 ],
               ],
             ),
