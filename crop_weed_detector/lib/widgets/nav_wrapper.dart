@@ -7,6 +7,9 @@ import '../screens/news_screen.dart';
 import 'side_menu.dart';
 import 'profile_dropdown.dart';
 
+// Import AppLocalizations
+import 'package:crop_weed_detector/app_localizations.dart';
+
 class NavWrapper extends StatefulWidget {
   const NavWrapper({Key? key}) : super(key: key);
 
@@ -20,17 +23,10 @@ class _NavWrapperState extends State<NavWrapper> with TickerProviderStateMixin {
   late AnimationController _fadeController;
 
   final List<Widget> _screens = [
-    HomeScreen(),
-    TipsScreen(),
-    DiseasesScreen(),
-    NewsScreen(),
-  ];
-
-  final List<String> _titles = [
-    "Home",
-    "Tips & Tricks",
-    "Crop Diseases",
-    "News & Updates"
+    const HomeScreen(),
+    const TipsScreen(),
+    const DiseasesScreen(),
+    const NewsScreen(),
   ];
 
   @override
@@ -60,36 +56,50 @@ class _NavWrapperState extends State<NavWrapper> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // Localizations reference
+    final loc = AppLocalizations.of(context);
+
+    // Titles for the app bar subtitle
+    final List<String> localizedTitles = [
+      loc?.translate('navWrapperHomeSubtitle') ?? "Home",
+      loc?.translate('navWrapperTipsSubtitle') ?? "Tips & Tricks",
+      loc?.translate('navWrapperDiseasesSubtitle') ?? "Crop Diseases",
+      loc?.translate('navWrapperNewsSubtitle') ?? "News & Updates",
+    ];
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         key: _scaffoldKey,
-        drawer: SideMenu(),
-        appBar: _buildAppBar(),
+        drawer: const SideMenu(),
+        appBar: _buildAppBar(loc, localizedTitles),
         body: FadeTransition(
           opacity: _fadeController,
           child: _screens[_selectedIndex],
         ),
-        bottomNavigationBar: _buildBottomNav(),
+        bottomNavigationBar: _buildBottomNav(loc),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(
+    AppLocalizations? loc,
+    List<String> localizedTitles,
+  ) {
     return AppBar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Crop & Weed Detector",
-            style: TextStyle(
+          Text(
+            loc?.translate('navWrapperMainTitle') ?? "Crop & Weed Detector",
+            style: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
           ),
           Text(
-            _titles[_selectedIndex],
+            localizedTitles[_selectedIndex],
             style: TextStyle(
               color: Colors.grey[600],
               fontSize: 14,
@@ -100,9 +110,9 @@ class _NavWrapperState extends State<NavWrapper> with TickerProviderStateMixin {
       backgroundColor: Colors.white,
       elevation: 0,
       leading: _buildMenuButton(),
-      actions: [
+      actions: const [
         ProfileDropdown(),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
@@ -131,7 +141,7 @@ class _NavWrapperState extends State<NavWrapper> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildBottomNav() {
+  Widget _buildBottomNav(AppLocalizations? loc) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -165,10 +175,26 @@ class _NavWrapperState extends State<NavWrapper> with TickerProviderStateMixin {
                 fontSize: 12,
               ),
               items: [
-                _buildNavItem(Icons.home_rounded, "Home", 0),
-                _buildNavItem(Icons.lightbulb_outline, "Tips", 1),
-                _buildNavItem(Icons.local_florist_rounded, "Diseases", 2),
-                _buildNavItem(Icons.article_rounded, "News", 3),
+                _buildNavItem(
+                  Icons.home_rounded,
+                  loc?.translate('navHome') ?? "Home",
+                  0,
+                ),
+                _buildNavItem(
+                  Icons.lightbulb_outline,
+                  loc?.translate('navTips') ?? "Tips",
+                  1,
+                ),
+                _buildNavItem(
+                  Icons.local_florist_rounded,
+                  loc?.translate('navDiseases') ?? "Diseases",
+                  2,
+                ),
+                _buildNavItem(
+                  Icons.article_rounded,
+                  loc?.translate('navNews') ?? "News",
+                  3,
+                ),
               ],
             ),
           ),

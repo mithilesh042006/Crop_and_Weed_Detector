@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:crop_weed_detector/screens/auth_screen.dart'hide ApiService;
+import 'package:crop_weed_detector/screens/auth_screen.dart' hide ApiService;
 import 'package:crop_weed_detector/services/api_service.dart';
+import 'package:crop_weed_detector/app_localizations.dart'; 
+// for AppLocalizations
+import 'package:crop_weed_detector/main.dart'; 
+// for MyApp.setLocale
 
 class ProfileDropdown extends StatefulWidget {
   const ProfileDropdown({Key? key}) : super(key: key);
@@ -16,7 +20,6 @@ class _ProfileDropdownState extends State<ProfileDropdown>
   late AnimationController _animationController;
   late Animation<double> _rotateAnimation;
   String _username = "User";
-  final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
 
   @override
@@ -56,6 +59,36 @@ class _ProfileDropdownState extends State<ProfileDropdown>
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    // We reference "profileMenuTitle" from localizations for the tooltip
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.grey.withOpacity(0.2),
+          width: 2,
+        ),
+      ),
+      child: AnimatedBuilder(
+        animation: _rotateAnimation,
+        builder: (context, child) {
+          return IconButton(
+            icon: Transform.rotate(
+              angle: _rotateAnimation.value * 3.14159,
+              child: const Icon(Icons.person, size: 28),
+            ),
+            color: Colors.black87,
+            onPressed: _toggleMenu,
+            tooltip: AppLocalizations.of(context)
+                    ?.translate('profileMenuTitle') ??
+                'Profile Menu',
+          );
+        },
+      ),
+    );
+  }
+
   void _toggleMenu() {
     setState(() {
       _isMenuOpen = !_isMenuOpen;
@@ -85,14 +118,13 @@ class _ProfileDropdownState extends State<ProfileDropdown>
     final offset = renderBox.localToGlobal(Offset.zero);
 
     return OverlayEntry(
-      builder: (context) => Stack(
+      builder: (ctx) => Stack(
         children: [
+          // close if tapped outside
           Positioned.fill(
             child: GestureDetector(
               onTap: _toggleMenu,
-              child: Container(
-                color: Colors.transparent,
-              ),
+              child: Container(color: Colors.transparent),
             ),
           ),
           Positioned(
@@ -119,92 +151,68 @@ class _ProfileDropdownState extends State<ProfileDropdown>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // User Info Section
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(15),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Colors.blue.shade100,
-                            child: Text(
-                              _username.isNotEmpty
-                                  ? _username[0].toUpperCase()
-                                  : 'U',
-                              style: TextStyle(
-                                color: Colors.blue.shade700,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _username,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'View Profile',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.blue.shade600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
+                    _buildUserSection(context),
                     // Menu Items
                     _buildMenuItem(
                       icon: Icons.person_outline,
-                      title: 'My Profile',
-                      subtitle: 'View and edit your profile',
+                      title: AppLocalizations.of(context)
+                              ?.translate('profileMyProfile') ??
+                          'My Profile',
+                      subtitle: AppLocalizations.of(context)
+                              ?.translate('profileEditProfile') ??
+                          'View and edit your profile',
                       onTap: () {
                         _toggleMenu();
-                        // TODO: Navigate or handle accordingly
+                        // TODO: Navigate to profile
                       },
                     ),
                     _buildMenuItem(
                       icon: Icons.settings_outlined,
-                      title: 'Settings',
-                      subtitle: 'App preferences and settings',
+                      title: AppLocalizations.of(context)
+                              ?.translate('profileSettings') ??
+                          'Settings',
+                      subtitle: AppLocalizations.of(context)
+                              ?.translate('profileAppSettings') ??
+                          'App preferences and settings',
                       onTap: () {
                         _toggleMenu();
-                        // TODO: Navigate or handle accordingly
+                        // TODO: Navigate to settings
                       },
                     ),
                     _buildMenuItem(
                       icon: Icons.help_outline,
-                      title: 'Help & Support',
-                      subtitle: 'Get help and contact support',
+                      title: AppLocalizations.of(context)
+                              ?.translate('profileHelpSupport') ??
+                          'Help & Support',
+                      subtitle: AppLocalizations.of(context)
+                              ?.translate('profileHelpSubtitle') ??
+                          'Get help and contact support',
                       onTap: () {
                         _toggleMenu();
-                        // TODO: Navigate or handle accordingly
+                        // TODO: Navigate to help
+                      },
+                    ),
+                    // Language Setting
+                    _buildMenuItem(
+                      icon: Icons.language,
+                      title: AppLocalizations.of(context)
+                              ?.translate('languageMenuTitle') ??
+                          'Change Language',
+                      subtitle: '',
+                      onTap: () {
+                        _toggleMenu();
+                        _showLanguageDialog();
                       },
                     ),
                     const Divider(height: 1),
                     _buildMenuItem(
                       icon: Icons.logout,
-                      title: 'Logout',
-                      subtitle: 'Sign out of your account',
+                      title: AppLocalizations.of(context)
+                              ?.translate('profileLogout') ??
+                          'Logout',
+                      subtitle: AppLocalizations.of(context)
+                              ?.translate('profileLogoutSubtitle') ??
+                          'Sign out of your account',
                       onTap: () {
                         _toggleMenu();
                         _showLogoutDialog(context);
@@ -221,37 +229,145 @@ class _ProfileDropdownState extends State<ProfileDropdown>
     );
   }
 
+  /// Build user section at top of dropdown
+  Widget _buildUserSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(15),
+        ),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: Colors.blue.shade100,
+            child: Text(
+              _username.isNotEmpty ? _username[0].toUpperCase() : 'U',
+              style: TextStyle(
+                color: Colors.blue.shade700,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _username,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  AppLocalizations.of(context)
+                          ?.translate('profileViewProfile') ??
+                      'View Profile',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.blue.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Show a dialog with language choices
+  void _showLanguageDialog() {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: Text(
+          AppLocalizations.of(context)
+                  ?.translate('languageDialogTitle') ??
+              'Select Language',
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton(
+              onPressed: () => _changeLanguage('en', dialogCtx),
+              child: Text(
+                AppLocalizations.of(context)
+                        ?.translate('languageOptionEnglish') ??
+                    'English',
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => _changeLanguage('hi', dialogCtx),
+              child: Text(
+                AppLocalizations.of(context)
+                        ?.translate('languageOptionHindi') ??
+                    'हिन्दी',
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => _changeLanguage('gu', dialogCtx),
+              child: Text(
+                AppLocalizations.of(context)
+                        ?.translate('languageOptionGujarati') ??
+                    'ગુજરાતી',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// The missing link: call MyApp.setLocale(...) to change language immediately
+  Future<void> _changeLanguage(String langCode, BuildContext dialogCtx) async {
+    Navigator.pop(dialogCtx); // close the language dialog
+
+    // Optionally store the preference
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('languageCode', langCode);
+
+    // IMMEDIATE update of the locale in MyApp
+    MyApp.setLocale(context, Locale(langCode));
+  }
+
   Future<void> _showLogoutDialog(BuildContext context) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        title: const Text(
-          'Logout Confirmation',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)?.translate('profileLogout') ?? 'Logout',
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
-        content: const Text(
-          'Are you sure you want to logout? You\'ll need to sign in again '
-          'to access your account.',
-          style: TextStyle(fontSize: 16),
+        content: Text(
+          AppLocalizations.of(context)?.translate('profileLogoutSubtitle') ??
+              'Sign out of your account',
+          style: const TextStyle(fontSize: 16),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(ctx, false),
             child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 16,
-              ),
+              AppLocalizations.of(context)?.translate('cancel') ?? 'Cancel',
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
             ),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(ctx, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
               foregroundColor: Colors.white,
@@ -260,9 +376,10 @@ class _ProfileDropdownState extends State<ProfileDropdown>
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text(
-              'Logout',
-              style: TextStyle(fontSize: 16),
+            child: Text(
+              AppLocalizations.of(context)?.translate('profileLogout') ??
+                  'Logout',
+              style: const TextStyle(fontSize: 16),
             ),
           ),
         ],
@@ -271,29 +388,22 @@ class _ProfileDropdownState extends State<ProfileDropdown>
 
     if (confirm) {
       try {
-        // (A) Debug print before clearing storage
         debugPrint("=== Attempting to call clearLocalStorage() ===");
-
-        // Show a loading indicator
         if (mounted) {
           showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (context) => const Center(
-              child: CircularProgressIndicator(),
-            ),
+            builder: (_) => const Center(child: CircularProgressIndicator()),
           );
         }
 
         // Clear local storage (SharedPreferences)
         await ApiService.clearLocalStorage();
 
-        // Remove the loading indicator
         if (mounted) {
-          Navigator.pop(context);
+          Navigator.pop(context); // remove loading indicator
         }
 
-        // (B) Debug print before navigating
         debugPrint("=== Attempting to navigate to AuthScreen... ===");
 
         // Navigate to AuthScreen, removing all previous routes
@@ -304,26 +414,25 @@ class _ProfileDropdownState extends State<ProfileDropdown>
           );
         }
 
-        // Show success message
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Successfully logged out'),
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context)?.translate('logoutSuccess') ??
+                    'Successfully logged out',
+              ),
               backgroundColor: Colors.green,
             ),
           );
         }
       } catch (e) {
-        // Remove loading indicator if it's still up
         if (mounted) {
-          Navigator.pop(context);
-        }
-
-        // Show error message
-        if (mounted) {
+          Navigator.pop(context); // remove loading indicator
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error during logout: $e'),
+              content: Text(
+                '${AppLocalizations.of(context)?.translate('logoutError') ?? 'Error during logout:'} $e',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -342,10 +451,7 @@ class _ProfileDropdownState extends State<ProfileDropdown>
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
             Container(
@@ -370,7 +476,8 @@ class _ProfileDropdownState extends State<ProfileDropdown>
                   Text(
                     title,
                     style: TextStyle(
-                      color: isDestructive ? Colors.redAccent : Colors.grey[800],
+                      color:
+                          isDestructive ? Colors.redAccent : Colors.grey[800],
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                     ),
@@ -388,33 +495,6 @@ class _ProfileDropdownState extends State<ProfileDropdown>
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: Colors.grey.withOpacity(0.2),
-          width: 2,
-        ),
-      ),
-      child: AnimatedBuilder(
-        animation: _rotateAnimation,
-        builder: (context, child) {
-          return IconButton(
-            icon: Transform.rotate(
-              angle: _rotateAnimation.value * 3.14159,
-              child: const Icon(Icons.person, size: 28),
-            ),
-            color: Colors.black87,
-            onPressed: _toggleMenu,
-            tooltip: 'Profile Menu',
-          );
-        },
       ),
     );
   }

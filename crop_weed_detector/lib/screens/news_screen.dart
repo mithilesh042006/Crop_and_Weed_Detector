@@ -5,6 +5,9 @@ import 'package:shimmer/shimmer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
+// Import AppLocalizations
+import 'package:crop_weed_detector/app_localizations.dart';
+
 class NewsScreen extends StatefulWidget {
   const NewsScreen({Key? key}) : super(key: key);
 
@@ -32,15 +35,17 @@ class _NewsScreenState extends State<NewsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Localizations reference
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async => _refreshNews(),
         child: CustomScrollView(
-          // -- Enable bouncing scroll physics here --
           physics: const BouncingScrollPhysics(),
           controller: _scrollController,
           slivers: [
-            _buildSliverAppBar(),
+            _buildSliverAppBar(loc),
             SliverPadding(
               padding: const EdgeInsets.all(16),
               sliver: FutureBuilder<List<dynamic>>(
@@ -50,10 +55,10 @@ class _NewsScreenState extends State<NewsScreen> {
                     return _buildLoadingList();
                   }
                   if (snapshot.hasError) {
-                    return _buildErrorWidget();
+                    return _buildErrorWidget(loc);
                   }
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return _buildEmptyState();
+                    return _buildEmptyState(loc);
                   }
                   return _buildNewsList(snapshot.data!);
                 },
@@ -64,22 +69,24 @@ class _NewsScreenState extends State<NewsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _refreshNews,
+        tooltip: loc?.translate('refreshNewsTooltip') ?? 'Refresh News',
         child: const Icon(Icons.refresh),
-        tooltip: 'Refresh News',
       ),
     );
   }
 
-  Widget _buildSliverAppBar() {
+  Widget _buildSliverAppBar(AppLocalizations? loc) {
     return SliverAppBar(
+      centerTitle: true,
       expandedHeight: 120,
       floating: true,
       pinned: true,
       stretch: true,
       flexibleSpace: FlexibleSpaceBar(
-        title: const Text(
-          "Agricultural News",
-          style: TextStyle(
+        centerTitle: true,
+        title: Text(
+          loc?.translate('newsScreenTitle') ?? "Agricultural News",
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -126,7 +133,7 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
-  Widget _buildErrorWidget() {
+  Widget _buildErrorWidget(AppLocalizations? loc) {
     return SliverToBoxAdapter(
       child: Center(
         child: Column(
@@ -134,14 +141,16 @@ class _NewsScreenState extends State<NewsScreen> {
           children: [
             const Icon(Icons.error_outline, size: 48, color: Colors.red),
             const SizedBox(height: 16),
-            const Text(
-              'Failed to load news',
-              style: TextStyle(fontSize: 18),
+            Text(
+              loc?.translate('newsLoadError') ?? 'Failed to load news',
+              style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _refreshNews,
-              child: const Text('Try Again'),
+              child: Text(
+                loc?.translate('newsTryAgain') ?? 'Try Again',
+              ),
             ),
           ],
         ),
@@ -149,7 +158,7 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations? loc) {
     return SliverToBoxAdapter(
       child: Center(
         child: Column(
@@ -158,7 +167,7 @@ class _NewsScreenState extends State<NewsScreen> {
             Icon(Icons.newspaper, size: 48, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
-              'No news available',
+              loc?.translate('newsEmptyTitle') ?? 'No news available',
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.grey[600],
@@ -193,8 +202,8 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   Widget _buildNewsCard(Map<String, dynamic> newsItem) {
-    DateTime timestamp = DateTime.parse(newsItem["timestamp"]);
-    String timeAgo = timeago.format(timestamp);
+    final DateTime timestamp = DateTime.parse(newsItem["timestamp"]);
+    final String timeAgo = timeago.format(timestamp);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -308,7 +317,6 @@ class NewsDetailSheet extends StatelessWidget {
             ),
             Expanded(
               child: ListView(
-                // -- Bouncing scroll physics for the bottom sheet too --
                 physics: const BouncingScrollPhysics(),
                 controller: controller,
                 padding: const EdgeInsets.all(20),

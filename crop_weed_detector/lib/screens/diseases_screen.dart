@@ -3,6 +3,9 @@ import 'package:crop_weed_detector/services/api_service.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
+// Import AppLocalizations
+import 'package:crop_weed_detector/app_localizations.dart';
+
 class DiseasesScreen extends StatefulWidget {
   const DiseasesScreen({Key? key}) : super(key: key);
 
@@ -42,19 +45,22 @@ class _DiseasesScreenState extends State<DiseasesScreen> {
   }
 
   void _showErrorSnackBar() {
+    final loc = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
-          children: const [
-            Icon(Icons.error_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text('Failed to load diseases'),
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(
+              loc?.translate('snackbarLoadError') ?? 'Failed to load diseases',
+            ),
           ],
         ),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
-          label: 'Retry',
+          label: loc?.translate('snackbarRetry') ?? 'Retry',
           onPressed: _loadDiseases,
           textColor: Colors.white,
         ),
@@ -77,19 +83,25 @@ class _DiseasesScreenState extends State<DiseasesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       body: NestedScrollView(
         controller: _scrollController,
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           SliverAppBar(
+            // 1) Ensure the SliverAppBar title is centered
+            centerTitle: true,
             expandedHeight: 120,
             floating: true,
             pinned: true,
             stretch: true,
             flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
-                "Crop Diseases",
-                style: TextStyle(fontWeight: FontWeight.bold),
+              // 2) Also ensure the FlexibleSpaceBar text is centered
+              centerTitle: true,
+              title: Text(
+                loc?.translate('diseasesScreenTitle') ?? "Crop Diseases",
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               background: Container(
                 decoration: BoxDecoration(
@@ -197,6 +209,7 @@ class _DiseasesScreenState extends State<DiseasesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -204,7 +217,7 @@ class _DiseasesScreenState extends State<DiseasesScreen> {
           Icon(Icons.healing, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
-            'No diseases found',
+            loc?.translate('diseaseEmptyTitle') ?? 'No diseases found',
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -214,7 +227,9 @@ class _DiseasesScreenState extends State<DiseasesScreen> {
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: _loadDiseases,
-            child: const Text('Refresh'),
+            child: Text(
+              loc?.translate('diseaseEmptyRefresh') ?? 'Refresh',
+            ),
           ),
         ],
       ),
@@ -375,6 +390,8 @@ class DiseaseDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     final String diseaseName = disease["disease_name"] ?? "";
     final String cropName = disease["crop_name"] ?? "";
     final String cure = disease["cure"] ?? "";
@@ -486,9 +503,10 @@ class DiseaseDetailsSheet extends StatelessWidget {
                               ),
                             ),
                           const SizedBox(height: 24),
-                          const Text(
-                            "Treatment & Prevention",
-                            style: TextStyle(
+                          Text(
+                            loc?.translate('treatmentHeading') ??
+                                "Treatment & Prevention",
+                            style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.green,
@@ -507,16 +525,9 @@ class DiseaseDetailsSheet extends StatelessWidget {
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: () => Navigator.pop(context),
-                              style: ElevatedButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              child: const Text(
-                                "Close",
-                                style: TextStyle(fontSize: 16),
+                              child: Text(
+                                loc?.translate('close') ?? "Close",
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ),
                           ),

@@ -1,7 +1,10 @@
-// main.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:crop_weed_detector/app_localizations.dart';
 import 'screens/auth_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/tips_screen.dart';
@@ -14,13 +17,81 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+/// A stateful MyApp to handle dynamic locale changes
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  /// Static helper so any widget can change the locale in-place:
+  ///   MyApp.setLocale(context, Locale('hi'));
+  static void setLocale(BuildContext context, Locale newLocale) {
+    final _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
+    state?._updateLocale(newLocale);
+  }
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale _locale = const Locale('en'); // default to English
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedLocale();
+  }
+
+  /// Load language code from SharedPreferences
+  Future<void> _loadSavedLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedLangCode = prefs.getString('languageCode');
+    if (savedLangCode != null && savedLangCode.isNotEmpty) {
+      setState(() {
+        _locale = Locale(savedLangCode);
+      });
+    }
+  }
+
+  /// Update the locale in state and store in SharedPreferences
+  Future<void> _updateLocale(Locale newLocale) async {
+    setState(() {
+      _locale = newLocale;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('languageCode', newLocale.languageCode);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
+      /// Use our dynamic locale
+      locale: _locale,
+
+      /// Set up localizations
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('hi', ''),
+        Locale('gu', ''),
+      ],
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      localeResolutionCallback: (deviceLocale, supportedLocales) {
+        if (deviceLocale != null) {
+          for (var supported in supportedLocales) {
+            if (supported.languageCode == deviceLocale.languageCode) {
+              return supported;
+            }
+          }
+        }
+        return supportedLocales.first; // fallback to en
+      },
+
+      /// Basic theme
       theme: ThemeData(
         primarySwatch: Colors.green,
         brightness: Brightness.light,
@@ -41,11 +112,14 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: AuthScreen(),
+
+      /// Keep AuthScreen as the starting screen
+      home: const AuthScreen(),
     );
   }
 }
 
+/// After login, you navigate to NavWrapper
 class NavWrapper extends StatefulWidget {
   const NavWrapper({Key? key}) : super(key: key);
 
@@ -53,18 +127,18 @@ class NavWrapper extends StatefulWidget {
   _NavWrapperState createState() => _NavWrapperState();
 }
 
-class _NavWrapperState extends State<NavWrapper> with SingleTickerProviderStateMixin {
+class _NavWrapperState extends State<NavWrapper>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late rive.RiveAnimationController _menuAnimation;
   late AnimationController _fadeController;
-  
-  // Remove const from the list since widget instances aren't const
+
   final List<Widget> _screens = [
-    HomeScreen(),
-    TipsScreen(),
-    DiseasesScreen(),
-    NewsScreen(),
+    const HomeScreen(),
+    const TipsScreen(),
+    const DiseasesScreen(),
+    const NewsScreen(),
   ];
 
   @override
@@ -93,13 +167,17 @@ class _NavWrapperState extends State<NavWrapper> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    /// Pull localized strings from AppLocalizations
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       key: _scaffoldKey,
-      drawer: SideMenu(), // Remove const
+      drawer: const SideMenu(),
       appBar: AppBar(
-        title: const Text(
-          "Crop & Weed Detector",
-          style: TextStyle(
+        /// Localize the app bar title if you want
+        title: Text(
+          loc?.translate('appTitle') ?? "Crop & Weed Detector",
+          style: const TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
             fontSize: 22,
@@ -125,7 +203,8 @@ class _NavWrapperState extends State<NavWrapper> with SingleTickerProviderStateM
             ),
           ),
         ),
-        actions: [
+        actions: const [
+          /// Remove `const` so it can rebuild if it needs to localize anything
           ProfileDropdown(),
           SizedBox(width: 16),
         ],
@@ -159,6 +238,7 @@ class _NavWrapperState extends State<NavWrapper> with SingleTickerProviderStateM
         child: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           child: BottomNavigationBar(
+            /// Do NOT use `const` here so we can rebuild with new translations
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             backgroundColor: Colors.white,
@@ -174,10 +254,22 @@ class _NavWrapperState extends State<NavWrapper> with SingleTickerProviderStateM
             elevation: 0,
             type: BottomNavigationBarType.fixed,
             items: [
-              _buildNavItem(Icons.home_rounded, "Home"),
-              _buildNavItem(Icons.eco_rounded, "Tips"),
-              _buildNavItem(Icons.local_florist_rounded, "Diseases"),
-              _buildNavItem(Icons.article_rounded, "News"),
+              _buildNavItem(
+                Icons.home_rounded,
+                loc?.translate('bottomNavHome') ?? "Home",
+              ),
+              _buildNavItem(
+                Icons.eco_rounded,
+                loc?.translate('bottomNavTips') ?? "Tips",
+              ),
+              _buildNavItem(
+                Icons.local_florist_rounded,
+                loc?.translate('bottomNavDiseases') ?? "Diseases",
+              ),
+              _buildNavItem(
+                Icons.article_rounded,
+                loc?.translate('bottomNavNews') ?? "News",
+              ),
             ],
           ),
         ),
@@ -187,6 +279,7 @@ class _NavWrapperState extends State<NavWrapper> with SingleTickerProviderStateM
 
   BottomNavigationBarItem _buildNavItem(IconData icon, String label) {
     return BottomNavigationBarItem(
+      /// No `const` here, we need dynamic strings
       icon: Icon(icon),
       activeIcon: Container(
         padding: const EdgeInsets.all(8),

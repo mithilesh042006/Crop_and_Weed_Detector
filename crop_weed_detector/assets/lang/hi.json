@@ -1,0 +1,98 @@
+{
+    "appTitle": "क्रॉप एंड वीड डिटेक्टर",
+    "bottomNavHome": "होम",
+    "bottomNavTips": "टिप्स",
+    "bottomNavDiseases": "बीमारियाँ",
+    "bottomNavNews": "समाचार",
+    
+    "profileMenuTitle": "प्रोफ़ाइल मेनू",
+    "profileMyProfile": "मेरा प्रोफ़ाइल",
+    "profileSettings": "सेटिंग्स",
+    "profileHelpSupport": "सहायता और समर्थन",
+    "profileLogout": "लॉगआउट",
+    
+    "profileLogoutSubtitle": "अपने खाते से साइन आउट करें",
+    "profileViewProfile": "प्रोफ़ाइल देखें",
+    "profileEditProfile": "अपनी प्रोफ़ाइल देखें और संपादित करें",
+    "profileAppSettings": "ऐप वरीयताएँ और सेटिंग्स",
+    "profileHelpSubtitle": "मदद प्राप्त करें और समर्थन से संपर्क करें",
+    
+    "languageMenuTitle": "भाषा बदलें",
+    "languageOptionEnglish": "अंग्रेज़ी",
+    "languageOptionHindi": "हिन्दी",
+    "languageOptionGujarati": "गुजराती",
+
+    "diseasesScreenTitle": "फसल से जुड़ी बीमारियाँ",
+  "snackbarLoadError": "बीमारियों को लोड करने में विफल",
+  "snackbarRetry": "पुनः प्रयास करें",
+
+  "diseaseEmptyTitle": "कोई बीमारी नहीं मिली",
+  "diseaseEmptyRefresh": "ताज़ा करें",
+
+  "treatmentHeading": "उपचार और रोकथाम",
+  "close": "बंद करें",
+
+  "newsScreenTitle": "कृषि समाचार",
+  "newsLoadError": "समाचार लोड करने में विफल",
+  "newsTryAgain": "पुनः प्रयास करें",
+  "newsEmptyTitle": "कोई समाचार उपलब्ध नहीं",
+  "refreshNewsTooltip": "समाचार रीफ़्रेश करें",
+
+  "tipsScreenTitle": "कृषि सुझाव",
+  "tipsLoadError": "सुझाव लोड करने में विफल",
+  "snackbarRetry": "पुनः प्रयास करें",
+  "tipsSearchPlaceholder": "फसल खोजें...",
+  "tipsNoAvailable": "कोई सुझाव उपलब्ध नहीं",
+  "tipsNoMatching": "कोई मिलान करने वाली फसल नहीं मिली",
+  "tipsEmptyRefresh": "ताज़ा करें",
+  "growingTipsHeading": "उगाने के टिप्स:"
+
+  , "aiTitle": "एआई छवि विश्लेषण",
+"tapToSelect": "छवि चुनने के लिए टैप करें",
+"selectImageAndModel": "कृपया छवि और मॉडल दोनों चुनें",
+"errorUploadingImage": "छवि अपलोड करने में त्रुटि",
+"couldNotLaunchWiki": "विकिपीडिया पेज लॉन्च नहीं कर सके",
+"uploadProcessing": "प्रोसेस हो रहा है...",
+"startClassification": "शुरू करें श्रेणीकरण",
+"startDetection": "शुरू करें डिटेक्शन",
+"chooseFromGallery": "गैलरी से चुनें",
+"takeAPhoto": "फोटो लें",
+"errorPickingImage": "छवि चुनने में त्रुटि",
+"classLabel": "श्रेणी",
+"confidenceLabel": "विश्वास स्तर",
+"wikiTitleLabel": "विकिपीडिया शीर्षक",
+"descriptionLabel": "विवरण",
+"viewOnWikipedia": "विकिपीडिया पर देखें",
+"cropsDetected": "फसलें पाई गई",
+"weedsDetected": "खरपतवार पाए गए",
+"classificationLabel": "श्रेणीकरण",
+"detectionLabel": "पता लगाना",
+"selectClassificationModel": "श्रेणीकरण मॉडल चुनें",
+"selectDetectionModel": "डिटेक्शन मॉडल चुनें"
+
+, "historyTitle": "इतिहास",
+"historyItems": "आइटम",
+"unknownModel": "अज्ञात मॉडल",
+"unknownCrop": "अज्ञात फसल",
+"unknownUser": "अज्ञात उपयोगकर्ता",
+"noSummaryAvailable": "कोई सारांश उपलब्ध नहीं",
+"modelUsed": "उपयोग किया गया मॉडल",
+"analyzedBy": "द्वारा विश्लेषित",
+"analysisDate": "विश्लेषण तिथि",
+"analysisSummary": "विश्लेषण सारांश",
+"noHistoryAvailable": "कोई इतिहास उपलब्ध नहीं",
+"appVersionLabel": "ऐप संस्करण 1.0.0"
+
+, "navWrapperMainTitle": "फ़सल और खरपतवार डिटेक्टर",
+"navWrapperHomeSubtitle": "होम",
+"navWrapperTipsSubtitle": "टिप्स और ट्रिक्स",
+"navWrapperDiseasesSubtitle": "फसल से जुड़ी बीमारियाँ",
+"navWrapperNewsSubtitle": "समाचार और अपडेट",
+"navHome": "होम",
+"navTips": "टिप्स",
+"navDiseases": "बीमारियाँ",
+"navNews": "समाचार"
+
+
+  }
+  

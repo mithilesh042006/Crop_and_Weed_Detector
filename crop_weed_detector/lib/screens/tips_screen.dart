@@ -3,6 +3,9 @@ import 'package:crop_weed_detector/services/api_service.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
+// Import AppLocalizations
+import 'package:crop_weed_detector/app_localizations.dart';
+
 class TipsScreen extends StatefulWidget {
   const TipsScreen({Key? key}) : super(key: key);
 
@@ -53,19 +56,22 @@ class _TipsScreenState extends State<TipsScreen>
   }
 
   void _showErrorSnackBar() {
+    final loc = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
-          children: const [
-            Icon(Icons.error_outline, color: Colors.white),
-            SizedBox(width: 8),
-            Text('Failed to load tips'),
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(
+              loc?.translate('tipsLoadError') ?? 'Failed to load tips',
+            ),
           ],
         ),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
-          label: 'Retry',
+          label: loc?.translate('snackbarRetry') ?? 'Retry',
           onPressed: _loadTips,
           textColor: Colors.white,
         ),
@@ -94,12 +100,15 @@ class _TipsScreenState extends State<TipsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         elevation: 0,
-        title: const Text(
-          "Farming Tips",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          loc?.translate('tipsScreenTitle') ?? "Farming Tips",
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -110,14 +119,14 @@ class _TipsScreenState extends State<TipsScreen>
       ),
       body: Column(
         children: [
-          _buildSearchBar(),
+          _buildSearchBar(loc),
           Expanded(
             child: RefreshIndicator(
               onRefresh: _loadTips,
               child: _isLoading
                   ? _buildLoadingGrid()
                   : _filteredTips.isEmpty
-                      ? _buildEmptyState()
+                      ? _buildEmptyState(loc)
                       : _buildTipsGrid(),
             ),
           ),
@@ -126,13 +135,13 @@ class _TipsScreenState extends State<TipsScreen>
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(AppLocalizations? loc) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
         onChanged: (value) => setState(() => _searchQuery = value),
         decoration: InputDecoration(
-          hintText: 'Search crops...',
+          hintText: loc?.translate('tipsSearchPlaceholder') ?? 'Search crops...',
           prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),
@@ -188,7 +197,7 @@ class _TipsScreenState extends State<TipsScreen>
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(AppLocalizations? loc) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -198,8 +207,8 @@ class _TipsScreenState extends State<TipsScreen>
           const SizedBox(height: 16),
           Text(
             _searchQuery.isEmpty
-                ? 'No tips available'
-                : 'No matching crops found',
+                ? (loc?.translate('tipsNoAvailable') ?? 'No tips available')
+                : (loc?.translate('tipsNoMatching') ?? 'No matching crops found'),
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -210,7 +219,9 @@ class _TipsScreenState extends State<TipsScreen>
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _loadTips,
-              child: const Text('Refresh'),
+              child: Text(
+                loc?.translate('tipsEmptyRefresh') ?? 'Refresh',
+              ),
             ),
           ]
         ],
@@ -319,6 +330,8 @@ class TipDetailsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -365,11 +378,11 @@ class TipDetailsSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              const Align(
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Growing Tips:",
-                  style: TextStyle(
+                  loc?.translate('growingTipsHeading') ?? "Growing Tips:",
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.green,
@@ -392,7 +405,10 @@ class TipDetailsSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text("Close"),
+                  child: Text(
+                    loc?.translate('close') ?? "Close",
+                    style: const TextStyle(fontSize: 16),
+                  ),
                 ),
               ),
             ],
