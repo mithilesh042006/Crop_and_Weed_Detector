@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests
 import json
 import random
@@ -21,32 +22,35 @@ ADMIN_PASSWORD = "adminpass"
 BASE_TIPS = [
     {
         "crop_tips": (
-            "Water deeply early in the morning to encourage strong root growth. "
-            "Avoid overhead irrigation to reduce fungal risks."
+            "સવારે ઉંડું પાણી આપો જેથી મૂળોને મજબૂત વૃદ્ધિ માટે પ્રોત્સાહિત કરી શકાય. "
+            "ફૂગ સંક્રમણનું જોખમ ઘટાડવા માટે ઓવરહેડ સિંચાઈ ટાળો."
         )
     },
     {
         "crop_tips": (
-            "Incorporate well-rotted manure or compost before planting. "
-            "This improves soil structure and nutrient content."
+            "રોપણી કરતાં પહેલા સારી રીતે સડી ગયેલું ખાતર અથવા કમ્પોસ્ટ ઉમેરો. "
+            "આથી માટીની રચના તથા પોષક તત્ત્વોમાં સુધાર થાય છે."
         )
     },
     {
         "crop_tips": (
-            "Monitor for pests weekly. Use sticky traps or introduce natural predators (e.g., ladybugs) "
-            "to keep aphids and other insects under control."
+            "દર અઠવાડિયે જીવાતો માટે નજર રાખો. ચાંદલાપટ્ટીઓ (sticky traps) વાપરો "
+            "અથવા કુદરતી શત્રુઓ (જેમ કે લેડીબગ્સ) રજૂ કરો જેથી સફેદમાખી "
+            "વગેરે પર નિયંત્રણ રાખી શકાય."
         )
     },
     {
         "crop_tips": (
-            "Mulch around seedlings to conserve moisture and suppress weeds. "
-            "Refresh the mulch layer as needed for maximum benefit."
+            "મૂળ ચારો સાચવવા માટે તથા જ્યાં સુધી હરિયાળો દૂધ કે વાવણી માટે ઓળખાણ "
+            "હાંસલ કરવામાં આવે. Mulch વાપરો, જેથી વધારાના ગુણ મળી રહે તથા "
+            "નિયંત્રણ કરવામાં પણ મદદ મળે."
         )
     },
     {
         "crop_tips": (
-            "Practice crop rotation with legumes to naturally replenish nitrogen in the soil. "
-            "Test your soil pH annually and amend accordingly."
+            "દાગીના આધારિત પાક પર્યાવરણ ઊભું કરવામાં કુદરતી રીતે નિટ્રોજન "
+            "પુનઃપૂર્તિ માટે લીლა ફલીઓવાળા પાક (લેગયુમ્સ) સાથે ફસલ ફેરવણી કરો. "
+            "માટીનું pH દર વર્ષે તપાસો અને જરૂરી સુધારાઓ કરો."
         )
     }
 ]
@@ -54,79 +58,82 @@ BASE_TIPS = [
 BASE_DISEASES = [
     {
         "cure": (
-            "Remove and burn infected plant debris. Apply copper-based fungicide at the first sign "
-            "of infection to halt further spread."
+            "દૂષિત છોડના અવશેષોને દૂર કરો અને અગ્નિમાં બાળી દો. "
+            "સંક્રમણની પ્રથમ નિશાનીમાં તાંબા આધારિત ફૂગનાશક લગાવો "
+            "જેથી વધુ ફેલાવો અટકી શકે."
         ),
-        "commonness": "high"
+        "commonness": "ઉચ્ચ"
     },
     {
         "cure": (
-            "Plant disease-resistant varieties and use certified disease-free seeds. "
-            "Rotate crops every 2–3 years to break the disease cycle."
+            "રોગપ્રતિકારક જાતો વાવો तथा પ્રમાણિત સ્વચ્છ બીજો નો ઉપયોગ કરો. "
+            "રોગચક્રમાં વિક્ષેપ આવેએ માટે 2–3 વર્ષે એકવાર પાક ફેરવણી કરો."
         ),
-        "commonness": "moderate"
+        "commonness": "મધ્યમ"
     },
     {
         "cure": (
-            "Use biological controls such as Bacillus subtilis. Maintain lower humidity in "
-            "greenhouses to deter fungal growth."
+            "જીવાવિશેષ-નિયંત્રણ (Biological control) માટે Bacillus subtilis નો ઉપયોગ કરો. "
+            "ફૂગને રોકવા માટે ગ્રીનહાઉસમાં સૌથી ઓછી ભેજ રાખવાની કોશિશ કરો."
         ),
-        "commonness": "low"
+        "commonness": "નગણ્ય"
     },
     {
         "cure": (
-            "Apply systemic fungicides as recommended. Prune surrounding vegetation to improve "
-            "air circulation and reduce damp conditions."
-        ),
-        "commonness": "high"
+            "જાહેર દિશા અનુસાર systemic fungicides લગાવો. "
+            "આસપાસની વધારાનીેષણશાખાઓ/Buttonholes)"
+            "વીઝ ફૂગ અપેક્ષિત."
+        )
     },
     {
         "cure": (
-            "Introduce beneficial nematodes to manage soil pests and reduce infection rates. "
-            "Regularly monitor fields for early symptoms."
+            "માટીજયાં જીવાતોને નિયંત્રિત કરવા માટે ಲાભદાયક nematodes રજૂ કરો "
+            "અને સંક્રમણમાં ઘટાડો કરો. "
+            "રોગની પ્રથમ লক্ষણો માટે નિયમિતરીતે ખેતરો તપાસો."
         ),
-        "commonness": "moderate"
+        "commonness": "મધ્યમ"
     }
 ]
 
 BASE_NEWS = [
     {
-        "subtitle": "Soil Health & Regeneration",
+        "subtitle": "માટી સ્વાસ્થ્ય & પુનઃજીવન",
         "content": (
-            "Farmers adopting regenerative practices report improved yields and healthier soils, "
-            "according to leading agronomists."
+            "પુનઃજીવિત ખેતી પદ્ધતિઓ અનુસરતા ખેડૂતોએ વધુ ઉપજ "
+            "અને વધુ સારી માટી સ્થિતિ હોવાનું જણાવ્યું છે, આવું અગ્રણી કૃષિશાસ્ત્રીઓ કહે છે."
         ),
         "author_name": "AgriPulse"
     },
     {
-        "subtitle": "Pesticide Regulations",
+        "subtitle": "ખેતીમાં રસાયણોના નિયમન",
         "content": (
-            "A new policy restricts several chemical pesticides, encouraging farmers to switch "
-            "to organic alternatives and safer handling protocols."
+            "નવી નીતિ કેટલાક রাসાયણિક pesticide પર પ્રતિબંધ મૂકે છે, "
+            "જે ખેડુતોને ორგანિક વિકલ્પો તરફ વળવા માટે પ્રોત્સાહિત કરે છે."
         ),
         "author_name": "Farming Daily"
     },
     {
-        "subtitle": "Climate-Smart Agriculture",
+        "subtitle": "ક્લાઈમેટ-સ્માર્ટ ખેતી",
         "content": (
-            "Rising temperatures push the adoption of drought-resistant cultivars and water-saving "
-            "technologies, helping farmers cope with erratic weather patterns."
+            "ઉચ્ચ તાપમાનમાં વધી રહેલા ચેતા વચ્ચે તેેલું-ઓછું પાણી ખર્ચતી "
+            "નવાં જાતો (cultivars) અપનાવવા પર ભાર આપવામાં આવે છે, "
+            "જે અસ્થિર વાતાવરણમાં પણ ખેતીમાં સહાયક છે."
         ),
         "author_name": "Global Ag Forum"
     },
     {
-        "subtitle": "Precision Farming Growth",
+        "subtitle": "સુક્ષ્મખેતી (Precision Farming) ની વૃદ્ધિ",
         "content": (
-            "GPS-guided tractors and drone surveillance see a surge in usage, cutting labor costs "
-            "and boosting harvest efficiency by up to 20%."
+            "GPS-સુચિત ટ્રેકટર તથા ડ્રોન દ્વારા સર્વેક્ષણમાં વધારો જોવા મળે છે, "
+            "જે કારણે કામદારોનો ખર્ચ ઘટે છે તથા 20% સુધી ઉપજમાં વધારો થાય છે."
         ),
         "author_name": "TechAg Times"
     },
     {
-        "subtitle": "Sustainable Supply Chains",
+        "subtitle": "સસ્ટેઇનેબલ સપ્લાય ચેઇન્સ",
         "content": (
-            "Retailers increasingly demand transparent sourcing, encouraging farmers to document "
-            "their practices from seed to sale."
+            "રિટેલરો ઉત્પાદન વિશે વધુ પારદર્શક માહિતી માંગે છે, "
+            "જે ખેડૂતોને બીજથી માંડી વેચાણ સુધીની પ્રવૃત્તિઓનું દસ્તાવેજીકરણ રાખવા માટે ಉತ್ತેજિત કરે છે."
         ),
         "author_name": "EcoMarket Insights"
     }
@@ -173,8 +180,8 @@ CROP_FILENAMES = [
 # --------------------------
 def create_tips_for_crops():
     """
-    Returns a list of tips where each tip is assigned to one of the 30 crops.
-    'crop_name' is derived from the filename by removing '.jpg'.
+    30 ફસાયોને અનુરૂપ કરીને ટિપ્સ બનાવે છે, જ્યાં crop_name ફાઇલનામમાંથી મેળવવામાં આવે છે.
+    'crop_name' એ '.jpg' દૂર કરીને રહેશે.
     """
     tips_data = []
     for crop_image in CROP_FILENAMES:
@@ -191,9 +198,9 @@ def create_tips_for_crops():
 # --------------------------
 def create_30_diseases():
     """
-    Returns a list of 30 randomly sampled diseases from the 5 BASE_DISEASES.
-    Each will have a unique disease_name like 'Disease1', 'Disease2', etc.
-    Now also includes 'crop_name', chosen from the 30 filenames.
+    5 ધ્રુજતા BASE_DISEASES માંથી 30 અનિયમિક (random) diseases પરત આપે છે.
+    દરેક ziekte માટે નામ 'Disease1', 'Disease2', ... જેવું unieke હશે.
+   _crop_name' પણ 30 ફાઈલનામમાંથી એકાર્ણે પસંદ કરવામાં આવશે.
     """
     diseases_data = []
     for i in range(1, 31):
@@ -214,8 +221,8 @@ def create_30_diseases():
 # --------------------------
 def create_30_news_items():
     """
-    Returns a list of 30 randomly sampled news items from the 5 BASE_NEWS.
-    Each will have a unique title like 'News1', 'News2', etc.
+    5 BASE_NEWS માંથી 30 અનિયમિક (random) news items પરત આપે છે.
+    દરેક news માટે 'News1', 'News2', ... જેવું unique title હશે.
     """
     news_data = []
     for i in range(1, 31):
@@ -230,16 +237,16 @@ def create_30_news_items():
 
 def main():
     """
-    Main function to:
-      1) Log in as Admin
-      2) Generate tips for each of the 30 crop filenames (removing .jpg)
-      3) Also generate 30 diseases (with crop_name) and 30 news items
-      4) Send them to the respective endpoints
+    મુખ્ય કાર્ય:
+      1) એડમિન તરીકે લોગિન કરો
+      2) 30 જેટલી પાક ફાઈલનામ ('.jpg' વિना) માટે ટિપ્સ બનાવો
+      3) 30 બીમારીઓ (crop_name সহ) તથા 30 સમાચાર ELB
+      4) സ്വന്തം એન્ડપોઈન્ટ્સ પર JSON મોકલો
     """
     session = requests.Session()
 
     # 1) Admin Login
-    print("Attempting admin login...")
+    print("એડમિન લોગિન કરવાની કોશિશ કરી રહ્યા છીએ...")
     login_payload = {
         "username": ADMIN_USERNAME,
         "password": ADMIN_PASSWORD
@@ -249,7 +256,7 @@ def main():
         login_response = session.post(ADMIN_LOGIN_URL, json=login_payload)
         login_response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        print(f"[ERROR] Failed to reach login endpoint: {e}")
+        print(f"[ભૂલ] લોગિન એન્ડપોઈન્ટ સુધી પહોંચી શકાયું નથી: {e}")
         return
 
     if login_response.status_code == 200:
@@ -257,54 +264,54 @@ def main():
         if data.get("is_admin") is True:
             sessionid = data.get("sessionid")
             csrftoken = data.get("csrftoken")
-            print("[SUCCESS] Admin login successful.")
+            print("[સફળતા] એડમિન લોગિન સફળ.")
 
             if sessionid:
                 session.cookies.set("sessionid", sessionid)  # No domain argument
             if csrftoken:
                 session.headers.update({"X-CSRFToken": csrftoken})
         else:
-            print("[ERROR] Not an admin account or something went wrong.")
+            print("[ભૂલ] કદાચ એડમિન એકાઉન્ટ નથી કે અન્ય કોઈ સમસ્યા છે.")
             return
     else:
-        print(f"[ERROR] Admin login failed. Status code: {login_response.status_code}")
+        print(f"[ભૂલ] એડમિન લોગિન નિષ્ફળ. સ્તેટ્સ કોડ: {login_response.status_code}")
         print(login_response.text)
         return
 
     # 2) Create and Send Tips
-    print("\nAdding/Updating tips for the 30 provided crops...")
+    print("\n30 પાક માટેની ટિપ્સ ઉમેરવાની/અપડેટ કરવાની પ્રક્રિયા...")
     tips_data = create_tips_for_crops()
     for tip in tips_data:
         try:
             resp = session.post(ADD_TIP_URL, json=tip)
             resp.raise_for_status()
-            print(f"[SUCCESS] {tip['crop_name']}: {resp.json().get('message')}")
+            print(f"[સફળતા] {tip['crop_name']}: {resp.json().get('message')}")
         except requests.exceptions.RequestException as e:
-            print(f"[ERROR] Could not add/update tip for {tip['crop_name']}: {e}")
+            print(f"[ભૂલ] {tip['crop_name']} માટે ટિપ્સ ઉમેરવી/અપડેટ કરવામાં પરાજય: {e}")
 
     # 3) Create and Send Diseases
-    print("\nAdding/Updating 30 diseases...")
+    print("\n30 بیماری ઉમેરવાની/અપડેટ કરવાની પ્રક્રિયા...")
     diseases_data = create_30_diseases()
     for disease in diseases_data:
         try:
             resp = session.post(ADD_DISEASE_URL, json=disease)
             resp.raise_for_status()
-            print(f"[SUCCESS] {disease['disease_name']}: {resp.json().get('message')}")
+            print(f"[સફળતા] {disease['disease_name']}: {resp.json().get('message')}")
         except requests.exceptions.RequestException as e:
-            print(f"[ERROR] Could not add/update disease {disease['disease_name']}: {e}")
+            print(f"[ભૂલ] {disease['disease_name']} માટે નો દસ્તાવેજ ઉમેરવામાં/અપડેટ કરવામાં પરાજય: {e}")
 
     # 4) Create and Send News
-    print("\nAdding/Updating 30 news items...")
+    print("\n30 સમાચાર ઉમેરવાની/અપડેટ કરવાની પ્રક્રિયા...")
     news_data = create_30_news_items()
     for news_item in news_data:
         try:
             resp = session.post(ADD_NEWS_URL, json=news_item)
             resp.raise_for_status()
-            print(f"[SUCCESS] {news_item['title']}: {resp.json().get('message')}")
+            print(f"[સફળતા] {news_item['title']}: {resp.json().get('message')}")
         except requests.exceptions.RequestException as e:
-            print(f"[ERROR] Could not add/update news '{news_item['title']}': {e}")
+            print(f"[ભૂલ] સમાચાર '{news_item['title']}' ઉમેરવામાં/અપડેટ કરવામાં પરાજય: {e}")
 
-    print("\nAll done! Check your database to see if the entries were added or updated.")
+    print("\nકાર્ય પૂર્ણ! તમારી ડેટાબેિસ તપાસીને ખાતરી કરો કે નવી એન્ટ્રીઓ ઉમેરવામાં આવી છે કે નહીં.")
 
 if __name__ == "__main__":
     main()
