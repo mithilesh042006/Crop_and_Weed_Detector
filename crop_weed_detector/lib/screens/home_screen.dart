@@ -4,10 +4,11 @@ import 'dart:io';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:lottie/lottie.dart';
-// The critical import for canLaunchUrl and launchUrl:
 import 'package:url_launcher/url_launcher.dart';
-
 import 'package:crop_weed_detector/services/api_service.dart';
+
+// Import AppLocalizations
+import 'package:crop_weed_detector/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -46,18 +47,23 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
-  // Updated to use the newer canLaunchUrl and launchUrl from url_launcher
+  // Use the newer canLaunchUrl and launchUrl from url_launcher
   Future<void> _launchWikiUrl(String? url) async {
     if (url == null) return;
 
+    final loc = AppLocalizations.of(context);
     final Uri uri = Uri.parse(url);
+
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not launch Wikipedia page'),
+          SnackBar(
+            content: Text(
+              loc?.translate('couldNotLaunchWiki') ??
+                  'Could not launch Wikipedia page',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -66,10 +72,15 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> _uploadImage() async {
+    final loc = AppLocalizations.of(context);
+
     if (_image == null || _selectedModel == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select both an image and a model'),
+        SnackBar(
+          content: Text(
+            loc?.translate('selectImageAndModel') ??
+                'Please select both an image and a model',
+          ),
           backgroundColor: Colors.orange,
         ),
       );
@@ -103,7 +114,9 @@ class _HomeScreenState extends State<HomeScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error uploading image: $e'),
+            content: Text(
+              '${loc?.translate('errorUploadingImage') ?? "Error uploading image"}: $e',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -142,89 +155,109 @@ class _HomeScreenState extends State<HomeScreen>
           controller: controller,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Draggable handle
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                // Success animation on top
-                Center(
-                  child: Lottie.asset(
-                    'assets/success_animation.json',
-                    width: 100,
-                    height: 100,
-                    repeat: false,
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // CLASSIFICATION RESULTS
-                if (_selectedMode == 'classify' && _result != null) ...[
-                  _buildResultText('Class', _result!['class_name']),
-                  _buildResultText('Confidence', _result!['confidence']),
-                  if (_result!['wiki_title'] != null)
-                    _buildResultText('Wikipedia Title', _result!['wiki_title']),
-                  if (_result!['wiki_summary'] != null)
-                    _buildResultText('Description', _result!['wiki_summary']),
-                  if (_result!['wiki_url'] != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: ElevatedButton.icon(
-                        onPressed: () => _launchWikiUrl(_result!['wiki_url']),
-                        icon: const Icon(Icons.launch),
-                        label: const Text('View on Wikipedia'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal.shade400,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
-                ]
-
-                // DETECTION RESULTS
-                else if (_selectedMode == 'detect' && _result != null) ...[
-                  _buildResultText(
-                    'Crops Detected',
-                    _result!['crop_count'].toString(),
-                  ),
-                  _buildResultText(
-                    'Weeds Detected',
-                    _result!['weed_count'].toString(),
-                  ),
-                  const SizedBox(height: 20),
-                  // Show the annotated image if available
-                  if (_result!['processed_image_url'] != null)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        _result!['processed_image_url'],
-                        fit: BoxFit.cover,
-                        height: 300, // limit the max height
-                      ),
-                    ),
-                ],
-              ],
-            ),
+            child: _buildResultsContent(),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildResultsContent() {
+    final loc = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Draggable handle
+        Center(
+          child: Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 20),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
+        // Success animation on top
+        Center(
+          child: Lottie.asset(
+            'assets/success_animation.json',
+            width: 100,
+            height: 100,
+            repeat: false,
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // CLASSIFICATION RESULTS
+        if (_selectedMode == 'classify' && _result != null) ...[
+          _buildResultText(
+            loc?.translate('classLabel') ?? 'Class',
+            _result!['class_name'],
+          ),
+          _buildResultText(
+            loc?.translate('confidenceLabel') ?? 'Confidence',
+            _result!['confidence'],
+          ),
+          if (_result!['wiki_title'] != null)
+            _buildResultText(
+              loc?.translate('wikiTitleLabel') ?? 'Wikipedia Title',
+              _result!['wiki_title'],
+            ),
+          if (_result!['wiki_summary'] != null)
+            _buildResultText(
+              loc?.translate('descriptionLabel') ?? 'Description',
+              _result!['wiki_summary'],
+            ),
+          if (_result!['wiki_url'] != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: ElevatedButton.icon(
+                onPressed: () => _launchWikiUrl(_result!['wiki_url']),
+                icon: const Icon(Icons.launch),
+                label: Text(
+                  loc?.translate('viewOnWikipedia') ?? 'View on Wikipedia',
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal.shade400,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+        ]
+
+        // DETECTION RESULTS
+        else if (_selectedMode == 'detect' && _result != null) ...[
+          // 1) Show the annotated image first
+          if (_result!['processed_image_url'] != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                _result!['processed_image_url'],
+                fit: BoxFit.cover,
+                height: 300, // limit the max height
+              ),
+            ),
+          const SizedBox(height: 20),
+          // 2) Then show Crop/Weed counts
+          _buildResultText(
+            loc?.translate('cropsDetected') ?? 'Crops Detected',
+            _result!['crop_count'].toString(),
+          ),
+          _buildResultText(
+            loc?.translate('weedsDetected') ?? 'Weeds Detected',
+            _result!['weed_count'].toString(),
+          ),
+        ],
+      ],
     );
   }
 
@@ -257,6 +290,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -278,9 +313,11 @@ class _HomeScreenState extends State<HomeScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
-                    "AI Image Analysis",
-                    style: TextStyle(
+                  // "AI Image Analysis" -> localize
+                  Text(
+                    loc?.translate('aiTitle') ?? "AI Image Analysis",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -309,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen>
                       .slideX(delay: 400.ms)
                       .fadeIn(delay: 400.ms),
                   const SizedBox(height: 32),
-                  _buildUploadButton()
+                  _buildUploadButton(loc)
                       .animate()
                       .slideY(delay: 600.ms)
                       .fadeIn(delay: 600.ms),
@@ -351,6 +388,8 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildImageContent() {
+    final loc = AppLocalizations.of(context);
+
     if (_image == null) {
       return Stack(
         alignment: Alignment.center,
@@ -371,9 +410,9 @@ class _HomeScreenState extends State<HomeScreen>
                 color: Colors.black.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: const Text(
-                "Tap to select image",
-                style: TextStyle(
+              child: Text(
+                loc?.translate('tapToSelect') ?? "Tap to select image",
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -444,8 +483,14 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildModeButton(String mode, String label) {
+  Widget _buildModeButton(String mode, String fallbackLabel) {
+    final loc = AppLocalizations.of(context);
     bool isSelected = _selectedMode == mode;
+
+    // localize label
+    final String modeKey = (mode == 'classify') ? 'classificationLabel' : 'detectionLabel';
+    final String label = loc?.translate(modeKey) ?? fallbackLabel;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -459,8 +504,7 @@ class _HomeScreenState extends State<HomeScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color:
-                isSelected ? Colors.teal.withOpacity(0.3) : Colors.transparent,
+            color: isSelected ? Colors.teal.withOpacity(0.3) : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: isSelected ? Colors.white70 : Colors.white30,
@@ -483,6 +527,8 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildModelSelection() {
+    final loc = AppLocalizations.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -490,8 +536,10 @@ class _HomeScreenState extends State<HomeScreen>
           padding: const EdgeInsets.only(left: 8, bottom: 8),
           child: Text(
             _selectedMode == 'classify'
-                ? "Select Classification Model"
-                : "Select Detection Model",
+                ? (loc?.translate('selectClassificationModel') ??
+                    "Select Classification Model")
+                : (loc?.translate('selectDetectionModel') ??
+                    "Select Detection Model"),
             style: TextStyle(
               color: Colors.white.withOpacity(0.8),
               fontSize: 16,
@@ -518,8 +566,10 @@ class _HomeScreenState extends State<HomeScreen>
                 isExpanded: true,
                 hint: Text(
                   _selectedMode == 'classify'
-                      ? "Select Classification Model"
-                      : "Select Detection Model",
+                      ? (loc?.translate('selectClassificationModel') ??
+                          "Select Classification Model")
+                      : (loc?.translate('selectDetectionModel') ??
+                          "Select Detection Model"),
                   style: const TextStyle(color: Colors.white70),
                 ),
                 onChanged: (String? newValue) {
@@ -546,7 +596,11 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildUploadButton() {
+  Widget _buildUploadButton(AppLocalizations? loc) {
+    final isClassify = _selectedMode == 'classify';
+    final fallbackLabel = isClassify ? "Start Classification" : "Start Detection";
+    final processingLabel = loc?.translate('uploadProcessing') ?? "Processing...";
+
     return Container(
       width: double.infinity,
       height: 56,
@@ -577,8 +631,10 @@ class _HomeScreenState extends State<HomeScreen>
             const SizedBox(width: 12),
             Text(
               _isUploading
-                  ? "Processing..."
-                  : "Start ${_selectedMode == 'classify' ? 'Classification' : 'Detection'}",
+                  ? processingLabel
+                  : (isClassify
+                      ? loc?.translate('startClassification') ?? fallbackLabel
+                      : loc?.translate('startDetection') ?? fallbackLabel),
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -591,6 +647,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _showImagePickerOptions(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -630,9 +687,9 @@ class _HomeScreenState extends State<HomeScreen>
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: Colors.white),
-              title: const Text(
-                'Choose from Gallery',
-                style: TextStyle(color: Colors.white),
+              title: Text(
+                loc?.translate('chooseFromGallery') ?? 'Choose from Gallery',
+                style: const TextStyle(color: Colors.white),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -641,9 +698,9 @@ class _HomeScreenState extends State<HomeScreen>
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt, color: Colors.white),
-              title: const Text(
-                'Take a Photo',
-                style: TextStyle(color: Colors.white),
+              title: Text(
+                loc?.translate('takeAPhoto') ?? 'Take a Photo',
+                style: const TextStyle(color: Colors.white),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -666,9 +723,12 @@ class _HomeScreenState extends State<HomeScreen>
         _loadingController.forward(from: 0);
       }
     } catch (e) {
+      final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error picking image: $e'),
+          content: Text(
+            '${loc?.translate('errorPickingImage') ?? "Error picking image"}: $e',
+          ),
           backgroundColor: Colors.red,
         ),
       );

@@ -1,0 +1,104 @@
+{
+    "appTitle": "Crop & Weed Detector",
+    "bottomNavHome": "Home",
+    "bottomNavTips": "Tips",
+    "bottomNavDiseases": "Diseases",
+    "bottomNavNews": "News",
+    
+    "profileMenuTitle": "Profile Menu",
+    "profileMyProfile": "My Profile",
+    "profileSettings": "Settings",
+    "profileHelpSupport": "Help & Support",
+    "profileLogout": "Logout",
+    
+    "profileLogoutSubtitle": "Sign out of your account",
+    "profileViewProfile": "View Profile",
+    "profileEditProfile": "View and edit your profile",
+    "profileAppSettings": "App preferences and settings",
+    "profileHelpSubtitle": "Get help and contact support",
+    
+    "languageMenuTitle": "Change Language",
+    "languageOptionEnglish": "English",
+    "languageOptionHindi": "Hindi",
+    "languageOptionGujarati": "Gujarati",
+
+    "diseasesScreenTitle": "Crop Diseases",
+    "snackbarLoadError": "Failed to load diseases",
+    "snackbarRetry": "Retry",
+    
+    "diseaseEmptyTitle": "No diseases found",
+    "diseaseEmptyRefresh": "Refresh",
+    
+    "treatmentHeading": "Treatment & Prevention",
+    "close": "Close",
+
+    "newsScreenTitle": "Agricultural News",
+    "newsLoadError": "Failed to load news",
+    "newsTryAgain": "Try Again",
+    "newsEmptyTitle": "No news available",
+    "refreshNewsTooltip": "Refresh News",
+
+    "tipsScreenTitle": "Farming Tips",
+    "tipsLoadError": "Failed to load tips",
+    "snackbarRetry": "Retry",
+    "tipsSearchPlaceholder": "Search crops...",
+    "tipsNoAvailable": "No tips available",
+    "tipsNoMatching": "No matching crops found",
+    "tipsEmptyRefresh": "Refresh",
+    "growingTipsHeading": "Growing Tips:",
+
+    "aiTitle": "AI Image Analysis",
+  "tapToSelect": "Tap to select image",
+  "selectImageAndModel": "Please select both an image and a model",
+  "errorUploadingImage": "Error uploading image",
+  "couldNotLaunchWiki": "Could not launch Wikipedia page",
+  
+  "uploadProcessing": "Processing...",
+  "startClassification": "Start Classification",
+  "startDetection": "Start Detection",
+  
+  "chooseFromGallery": "Choose from Gallery",
+  "takeAPhoto": "Take a Photo",
+  "errorPickingImage": "Error picking image",
+
+  "classLabel": "Class",
+  "confidenceLabel": "Confidence",
+  "wikiTitleLabel": "Wikipedia Title",
+  "descriptionLabel": "Description",
+  "viewOnWikipedia": "View on Wikipedia",
+  
+  "cropsDetected": "Crops Detected",
+  "weedsDetected": "Weeds Detected",
+
+  "classificationLabel": "Classification",
+  "detectionLabel": "Detection",
+
+  "selectClassificationModel": "Select Classification Model",
+  "selectDetectionModel": "Select Detection Model"
+
+  , "historyTitle": "History",
+"historyItems": "items",
+"unknownModel": "Unknown Model",
+"unknownCrop": "Unknown Crop",
+"unknownUser": "Unknown User",
+"noSummaryAvailable": "No summary available",
+"modelUsed": "Model Used",
+"analyzedBy": "Analyzed By",
+"analysisDate": "Analysis Date",
+"analysisSummary": "Analysis Summary",
+"noHistoryAvailable": "No history available",
+"appVersionLabel": "App Version 1.0.0"
+
+, "navWrapperMainTitle": "Crop & Weed Detector",
+"navWrapperHomeSubtitle": "Home",
+"navWrapperTipsSubtitle": "Tips & Tricks",
+"navWrapperDiseasesSubtitle": "Crop Diseases",
+"navWrapperNewsSubtitle": "News & Updates",
+"navHome": "Home",
+"navTips": "Tips",
+"navDiseases": "Diseases",
+"navNews": "News"
+
+
+  }
+  

@@ -17,12 +17,14 @@ class AuthScreen extends StatefulWidget {
   _AuthScreenState createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateMixin {
+class _AuthScreenState extends State<AuthScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -63,9 +65,9 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       });
     }
   }
+
   void _checkPasswordStrength() {
     String password = _passwordController.text;
-    
     setState(() {
       // Check individual requirements
       _hasMinLength = password.length >= 8;
@@ -106,8 +108,11 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   }
 
   bool _isPasswordValid() {
-    return _hasMinLength && _hasUppercase && _hasLowercase && 
-           _hasNumber && _hasSpecialChar;
+    return _hasMinLength &&
+        _hasUppercase &&
+        _hasLowercase &&
+        _hasNumber &&
+        _hasSpecialChar;
   }
 
   Future<void> _authenticate(bool isLogin) async {
@@ -121,7 +126,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
         );
         return;
       }
-      
+
       if (_passwordController.text != _confirmPasswordController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -137,23 +142,38 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
 
     try {
       bool success = isLogin
-          ? await ApiService.loginUser(_usernameController.text, _passwordController.text)
-          : await ApiService.registerUser(_usernameController.text, _passwordController.text);
+          ? await ApiService.loginUser(
+              _usernameController.text, _passwordController.text)
+          : await ApiService.registerUser(
+              _usernameController.text, _passwordController.text);
 
       if (success && mounted) {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const NavWrapper(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-          ),
-        );
+        if (isLogin) {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const NavWrapper(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          );
+        } else {
+          _tabController.animateTo(0);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Registration successful! Please log in.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(isLogin ? "Invalid credentials!" : "Registration failed!"),
+            content:
+                Text(isLogin ? "Invalid credentials!" : "Registration failed!"),
             backgroundColor: Colors.red,
           ),
         );
@@ -171,9 +191,11 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       if (mounted) setState(() => _isLoading = false);
     }
   }
-  Future<void> _showBaseUrlDialog() async {
-    TextEditingController baseUrlController = TextEditingController(text: ApiService.baseUrl);
 
+  // This function remains but is commented out inside so it does nothing
+  Future<void> _showBaseUrlDialog() async {
+    /*
+    TextEditingController baseUrlController = TextEditingController(text: ApiService.baseUrl);
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -200,10 +222,10 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
               String newUrl = baseUrlController.text.trim();
               if (newUrl.isNotEmpty) {
                 setState(() => ApiService.baseUrl = newUrl);
-                
+
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setString('baseUrl', newUrl);
-                
+
                 if (mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -221,17 +243,23 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
         ],
       ),
     );
+    */
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // ──────────────────────────────────────────────────────────────────────────
+      // Comment out or remove the FloatingActionButton to remove it from the UI:
+      // ──────────────────────────────────────────────────────────────────────────
+      /*
       floatingActionButton: FloatingActionButton(
         onPressed: _showBaseUrlDialog,
         backgroundColor: peachColor,
         child: const Icon(Icons.settings, color: Colors.white),
         tooltip: 'Update Base URL',
       ),
+      */
       body: Stack(
         children: [
           Positioned.fill(
@@ -314,7 +342,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                               ),
                             ),
                           ),
-                          Container(
+                          SizedBox(
                             height: 320, // Fixed height for both tabs
                             child: TabBarView(
                               controller: _tabController,
@@ -356,7 +384,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
             icon: Icons.lock_outline,
             isPassword: true,
             obscureText: _obscurePassword,
-            onToggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
+            onToggleVisibility: () =>
+                setState(() => _obscurePassword = !_obscurePassword),
           ).animate().slideX(delay: 200.ms),
           const SizedBox(height: 30),
           _buildAuthButton("LOGIN", () => _authenticate(true)),
@@ -364,6 +393,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       ),
     );
   }
+
   Widget _buildRegisterForm() {
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -382,7 +412,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
             icon: Icons.lock_outline,
             isPassword: true,
             obscureText: _obscurePassword,
-            onToggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
+            onToggleVisibility: () =>
+                setState(() => _obscurePassword = !_obscurePassword),
           ).animate().slideX(delay: 200.ms),
           if (_passwordController.text.isNotEmpty) ...[
             const SizedBox(height: 10),
@@ -397,7 +428,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
             icon: Icons.lock_outline,
             isPassword: true,
             obscureText: _obscureConfirmPassword,
-            onToggleVisibility: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+            onToggleVisibility: () => setState(
+                () => _obscureConfirmPassword = !_obscureConfirmPassword),
           ).animate().slideX(delay: 400.ms),
           const SizedBox(height: 30),
           _buildAuthButton("REGISTER", () => _authenticate(false)),
@@ -426,7 +458,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           _buildRequirementRow('One uppercase letter (A-Z)', _hasUppercase),
           _buildRequirementRow('One lowercase letter (a-z)', _hasLowercase),
           _buildRequirementRow('One number (0-9)', _hasNumber),
-          _buildRequirementRow('One special character (!@#\$%^&*(),.?":{}|<>)', _hasSpecialChar),
+          _buildRequirementRow(
+              'One special character (!@#\$%^&*(),.?":{}|<>)', _hasSpecialChar),
         ],
       ),
     );
@@ -493,7 +526,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         ),
       ),
     );

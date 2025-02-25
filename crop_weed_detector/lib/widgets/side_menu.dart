@@ -1,8 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
-import 'dart:ui';
+
+// Import AppLocalizations
+import 'package:crop_weed_detector/app_localizations.dart';
 
 class SideMenu extends StatefulWidget {
   const SideMenu({Key? key}) : super(key: key);
@@ -33,20 +36,14 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
       duration: const Duration(milliseconds: 800),
     );
 
-    _headerScaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(
+    _headerScaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeOutBack,
       ),
     );
 
-    _historyTitleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
+    _historyTitleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.4, 1.0, curve: Curves.easeOutCubic),
@@ -144,6 +141,7 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
   }
 
   Widget _buildHistoryTitle() {
+    final loc = AppLocalizations.of(context);
     return FadeTransition(
       opacity: _historyTitleAnimation,
       child: SlideTransition(
@@ -162,7 +160,7 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
               ),
               const SizedBox(width: 12),
               Text(
-                'History',
+                loc?.translate('historyTitle') ?? 'History',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -171,7 +169,7 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
               ),
               const Spacer(),
               Text(
-                '${_history.length} items',
+                '${_history.length} ${loc?.translate('historyItems') ?? "items"}',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey[600],
@@ -185,8 +183,10 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
   }
 
   Widget _buildHistoryCard(Map<String, dynamic> record, int index) {
-    final model = record["model_chosen"] ?? "Unknown Model";
-    final crop = record["crop_name"] ?? "Unknown Crop";
+    final loc = AppLocalizations.of(context);
+
+    final model = record["model_chosen"] ?? loc?.translate('unknownModel') ?? "Unknown Model";
+    final crop = record["crop_name"] ?? loc?.translate('unknownCrop') ?? "Unknown Crop";
     final imageUrl = record["processed_image_url"];
     final rawDate = record["created_at"] ?? "";
     final createdAt = _formatDate(rawDate);
@@ -356,13 +356,23 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
   }
 
   Widget _buildDetailSheet(Map<String, dynamic> record) {
-    final model = record["model_chosen"] ?? "Unknown Model";
-    final crop = record["crop_name"] ?? "Unknown Crop";
+    final loc = AppLocalizations.of(context);
+
+    final model = record["model_chosen"] ??
+        loc?.translate('unknownModel') ??
+        "Unknown Model";
+    final crop = record["crop_name"] ??
+        loc?.translate('unknownCrop') ??
+        "Unknown Crop";
     final imageUrl = record["processed_image_url"];
-    final summary = record["summary"] ?? "No summary available";
+    final summary = record["summary"] ??
+        loc?.translate('noSummaryAvailable') ??
+        "No summary available";
     final rawDate = record["created_at"] ?? "";
     final createdAt = _formatDate(rawDate);
-    final username = record["username"] ?? "Unknown User";
+    final username = record["username"] ??
+        loc?.translate('unknownUser') ??
+        "Unknown User";
 
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
@@ -421,7 +431,6 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
                     ),
                   ),
                   const SizedBox(height: 24),
-
                   Text(
                     crop,
                     style: TextStyle(
@@ -431,23 +440,21 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
                     ),
                   ),
                   const SizedBox(height: 16),
-
                   _buildInfoCard(
                     icon: Icons.science_outlined,
-                    title: "Model Used",
+                    title: loc?.translate('modelUsed') ?? "Model Used",
                     content: model,
                   ),
                   _buildInfoCard(
                     icon: Icons.person_outline,
-                    title: "Analyzed By",
+                    title: loc?.translate('analyzedBy') ?? "Analyzed By",
                     content: username,
                   ),
                   _buildInfoCard(
                     icon: Icons.access_time,
-                    title: "Analysis Date",
+                    title: loc?.translate('analysisDate') ?? "Analysis Date",
                     content: createdAt,
                   ),
-
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 16),
                     padding: const EdgeInsets.all(16),
@@ -460,7 +467,8 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Analysis Summary",
+                          loc?.translate('analysisSummary') ??
+                              "Analysis Summary",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -490,6 +498,8 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Drawer(
       child: Container(
         decoration: BoxDecoration(
@@ -507,7 +517,7 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
           children: [
             ScaleTransition(
               scale: _headerScaleAnimation,
-              child: _buildHeader(),
+              child: _buildHeader(loc),
             ),
             _buildHistoryTitle(),
             Expanded(
@@ -516,14 +526,11 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.history,
-                            size: 48,
-                            color: Colors.grey[400],
-                          ),
+                          Icon(Icons.history, size: 48, color: Colors.grey[400]),
                           const SizedBox(height: 16),
                           Text(
-                            "No history available",
+                            loc?.translate('noHistoryAvailable') ??
+                                "No history available",
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 16,
@@ -540,14 +547,14 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
                           _buildHistoryCard(_history[index], index),
                     ),
             ),
-            _buildFooter(),
+            _buildFooter(loc),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations? loc) {
     return Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 16,
@@ -598,7 +605,7 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(AppLocalizations? loc) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -607,7 +614,7 @@ class _SideMenuState extends State<SideMenu> with SingleTickerProviderStateMixin
           Icon(Icons.info_outline, color: Colors.grey[600], size: 16),
           const SizedBox(width: 8),
           Text(
-            "App Version 1.0.0",
+            loc?.translate('appVersionLabel') ?? "App Version 1.0.0",
             style: TextStyle(
               color: Colors.grey[600],
               fontSize: 12,

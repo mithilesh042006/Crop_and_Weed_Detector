@@ -1,0 +1,100 @@
+{
+    "appTitle": "ક્રોપ & વીડ ડિટેક્ટર",
+    "bottomNavHome": "હોમ",
+    "bottomNavTips": "ટિપ્સ",
+    "bottomNavDiseases": "રોગો",
+    "bottomNavNews": "સમાચાર",
+    
+    "profileMenuTitle": "પ્રોફાઇલ મેનું",
+    "profileMyProfile": "મારો પ્રોફાઇલ",
+    "profileSettings": "સેટિંગ્સ",
+    "profileHelpSupport": "મદદ & સપોર્ટ",
+    "profileLogout": "લોગઆઉટ",
+    
+    "profileLogoutSubtitle": "તમારા ખાતામાંથી સાઇન આઉટ કરો",
+    "profileViewProfile": "પ્રોફાઇલ જુઓ",
+    "profileEditProfile": "તમારી પ્રોફાઇલ જુઓ ۽ સંપાદિત કરો",
+    "profileAppSettings": "એપ્ઠી પસંદગીઓ અને સેટિંગ્સ",
+    "profileHelpSubtitle": "મદદ મેળવો અને સપોર્ટ સાથે સંપર્ક કરો",
+    
+    "languageMenuTitle": "ભાષા બદલાવો",
+    "languageOptionEnglish": "અંગ્રેજી",
+    "languageOptionHindi": "હિંદી",
+    "languageOptionGujarati": "ગુજરાતી",
+  
+    "diseasesScreenTitle": "ડુંગળી રોકવાલી બીમારીઓ",
+    "snackbarLoadError": "બીમારીઓ લોડ કરવામાં નિષ્ફળતા",
+    "snackbarRetry": "ફરી પ્રયાસ કરો",
+  
+    "diseaseEmptyTitle": "કોઈ બીમારીઓ મળ્યો નહીં",
+    "diseaseEmptyRefresh": "પુનઃ ચકાસો",
+  
+    "treatmentHeading": "ઇલાજ અને પ્રતિબંધ",
+    "close": "બંધ કરો",
+
+        "newsScreenTitle": "કૃષિ સમાચાર",
+        "newsLoadError": "સમાચાર લોડ કરવામાં નિષ્ફળતા",
+        "newsTryAgain": "ફરી પ્રયાસ કરો",
+        "newsEmptyTitle": "સમાચાર ઉપલબ્ધ નથી",
+        "refreshNewsTooltip": "સમાચાર તાજું કરો",
+
+    "tipsScreenTitle": "ખેતી માટે ની સલાહ",
+  "tipsLoadError": "સલાહ લોડ કરવામાં નિષ્ફળતા",
+  "snackbarRetry": "ફરી પ્રયત્ન કરો",
+  "tipsSearchPlaceholder": "ખેતીખેતી શોધો...",
+  "tipsNoAvailable": "કોઈ સલાહ ઉપલબ્ધ નથી",
+  "tipsNoMatching": "મેળવાતી żad ફસલ મળી નથી",
+  "tipsEmptyRefresh": "ફરીથી કરો",
+  "growingTipsHeading": "ધાયું ઉગાડવાની ટિપ્સ:"
+
+  , "aiTitle": "એઆઇ ઇમેજ વિશ્લેષણ",
+"tapToSelect": "છબી પસંદ કરવા માટે ટૅપ કરો",
+"selectImageAndModel": "છબી અને મોડેલ બંને પસંદ કરો",
+"errorUploadingImage": "છબી અપલોડ કરતા ભૂલ",
+"couldNotLaunchWiki": "વિકિપીડિયા પેજ લોન્ચ કરી શકતા નથી",
+"uploadProcessing": "પ્રોસેસ કરી રહ્યું છે...",
+"startClassification": "શરૂ કરો વર્ગીકરણ",
+"startDetection": "શરૂ કરો શોધ",
+"chooseFromGallery": "ગેલેરીમાંથી પસંદ કરો",
+"takeAPhoto": "ફોટો લો",
+"errorPickingImage": "છબી પસંદ કરતી વખતે ભૂલ",
+"classLabel": "વર્ગ",
+"confidenceLabel": "વિશ્વાસ",
+"wikiTitleLabel": "વિકિપીડિયા શીર્ષક",
+"descriptionLabel": "વર્ણન",
+"viewOnWikipedia": "વિકિપીડિયા પર જુઓ",
+"cropsDetected": "ખેતી મેળવાઇ",
+"weedsDetected": "ખરબૂચીઓ મળ્યા",
+"classificationLabel": "વર્ગીકરણ",
+"detectionLabel": "શોધ",
+"selectClassificationModel": "વರ್ಗીકરણ મોડેલ પસંદ કરો",
+"selectDetectionModel": "શોધ મોડેલ પસંદ કરો"
+
+, "historyTitle": "ઇતિહાસ",
+"historyItems": "વસ્તુઓ",
+"unknownModel": "અજાણ્યું મોડેલ",
+"unknownCrop": "અજાણ્યો પાક",
+"unknownUser": "અજાણ્યો વપરાશકર્તા",
+"noSummaryAvailable": "કોઈ સારાંશ ઉપલબ્ધ નથી",
+"modelUsed": "વપરાયેલ મોડેલ",
+"analyzedBy": "દ્વારા વિશ્લેષિત",
+"analysisDate": "વિશ્લેષણ તારીખ",
+"analysisSummary": "વિશ્લેષણ સારાંશ",
+"noHistoryAvailable": "ઇતિહાસ ઉપલબ્ધ નથી",
+"appVersionLabel": "એપ વર્ઝન 1.0.0"
+
+, "navWrapperMainTitle": "ક્રોપ & वीड ડિસેક્ટર",
+"navWrapperHomeSubtitle": "હોમ",
+"navWrapperTipsSubtitle": "ટિપ્સ & ટ્રિક્સ",
+"navWrapperDiseasesSubtitle": "પાકની બીમારીઓ",
+"navWrapperNewsSubtitle": "સમાચાર & અપડેટ્સ",
+"navHome": "હોમ",
+"navTips": "ટિપ્સ",
+"navDiseases": "બીમારીઓ",
+"navNews": "સમાચાર"
+
+
+    
+      
+  }
+  
